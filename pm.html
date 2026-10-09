@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katamata Group — Property Management</title>
+<script src="config.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { ink: '#111c2b', brand: { DEFAULT: '#163a6b', dark: '#0f2d55' }, tag: '#f2600c' } } } };
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--ink:#111c2b;--brand:#163a6b;--brand-d:#0f2d55;--tag:#f2600c;--paper:#eceff2;--line:#d9dee4;--text:#1b2633}
+*{box-sizing:border-box}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--text)}
+h1,h2,h3,.display{font-family:'Bricolage Grotesque','IBM Plex Sans',sans-serif;letter-spacing:-.01em}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .95rem;border-radius:8px;font-size:.85rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;line-height:1.2}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,.input:focus-visible,.nav:focus-visible,.tab:focus-visible{outline:2px solid var(--tag);outline-offset:2px}
+.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:var(--brand-d)}
+.btn-ghost{background:#fff;border-color:#c9d0d8;color:#2a3746}.btn-ghost:hover{background:#f2f4f6}
+.btn-danger{background:#fff;border-color:#f0c4c0;color:#b42318}.btn-danger:hover{background:#fef1f0}
+.btn-warn{background:#fff4e6;border-color:#f5cf9f;color:#9a4a03}.btn-warn:hover{background:#ffe9cc}
+.btn-sm{padding:.3rem .55rem;font-size:.75rem;border-radius:7px}
+.input{width:100%;border:1px solid #c9d0d8;background:#fff;border-radius:8px;padding:.5rem .7rem;font-size:.875rem;outline:none;transition:border-color .15s,box-shadow .15s;color:var(--text)}
+.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(22,58,107,.14)}
+.input:disabled,.input[readonly]{background:#f0f2f5;color:#6a7686}
+.input-sm{padding:.25rem .4rem;font-size:.75rem;width:auto;border-radius:6px}
+.label{display:block;font-size:.78rem;font-weight:600;color:#465466;margin-bottom:.3rem}
+.hint{font-size:.72rem;color:#7a8696;margin-top:.25rem}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:600;white-space:nowrap}
+.b-green{background:#d9f3e4;color:#0d6b3f}.b-red{background:#fde3e0;color:#b42318}.b-amber{background:#fdeccb;color:#8f4f07}.b-gray{background:#e6e9ed;color:#4d5968}.b-blue{background:#dce8fb;color:#1a44b8}
+/* Tag kode aset — elemen khas aplikasi */
+.tagcode{display:inline-flex;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;color:var(--ink);background:#fff;border:1px solid #c9d0d8;border-left:4px solid var(--tag);padding:.15rem .5rem .15rem .45rem;border-radius:3px 6px 6px 3px;white-space:nowrap;letter-spacing:.01em}
+table.tbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.tbl th{text-align:left;font-size:.74rem;font-weight:600;color:#5a6676;padding:.65rem .75rem;background:#f6f8fa;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:.65rem .75rem;border-bottom:1px solid #edf0f3;vertical-align:middle}
+.tbl tbody tr:hover{background:#f9fafc}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl tfoot td{font-weight:700;background:#f6f8fa;border-top:2px solid var(--line)}
+.nav{display:flex;gap:.75rem;align-items:center;padding:.58rem .85rem;border-radius:8px;color:#a8b5c6;font-weight:500;font-size:.86rem;cursor:pointer;position:relative;width:100%;text-align:left;background:none;border:0}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav.active{background:rgba(255,255,255,.09);color:#fff}
+.nav.active::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:0 3px 3px 0;background:var(--tag)}
+.nav i{width:1.1rem;text-align:center}
+.tab{padding:.6rem 1rem;font-size:.85rem;font-weight:600;color:#6a7686;border-bottom:2px solid transparent;cursor:pointer;background:none;border-top:0;border-left:0;border-right:0;margin-bottom:-1px}
+.tab:hover{color:var(--text)}.tab.on{color:var(--brand);border-bottom-color:var(--tag)}
+.toast{display:flex;gap:.6rem;align-items:center;background:var(--ink);color:#fff;padding:.7rem 1rem;border-radius:8px;font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:360px;transition:opacity .3s;animation:tin .25s ease}
+.toast.error{background:#8f1d14}
+.toast i{color:#7ee0a5}.toast.error i{color:#ffc9c4}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.modal-in{animation:tin .18s ease}
+.donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--tag) calc(var(--p)*1%),var(--brand) 0);position:relative;flex-shrink:0}
+.donut::after{content:'';position:absolute;inset:22px;background:#fff;border-radius:50%}
+.donut-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+canvas#sigCanvas{touch-action:none;width:100%;height:150px;border:1px dashed #9aa6b5;border-radius:8px;background:#fff;cursor:crosshair}
+.dl{display:grid;grid-template-columns:130px 1fr;gap:.35rem .75rem;font-size:.84rem}.dl dt{color:#6a7686}.dl dd{font-weight:500;word-break:break-word}
+/* Print */
+#printArea{display:none}
+.label-card{border:1px dashed #666;padding:8px 10px;width:300px;display:inline-block;margin:5px;page-break-inside:avoid;background:#fff;color:#000;vertical-align:top}
+.label-card .lc-org{font-size:10px;font-weight:700;letter-spacing:.02em}
+.label-card .lc-name{font-size:11px;margin-bottom:3px}
+.label-card .lc-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.label-card svg{max-width:190px;height:auto}
+.ptbl{width:100%;border-collapse:collapse;font-size:10.5px}
+.ptbl th,.ptbl td{border:1px solid #555;padding:4px 6px}.ptbl th{background:#e8e8e8}.ptbl .r{text-align:right}.ptbl tfoot td{font-weight:700;background:#f2f2f2}
+@media print{
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;background:#fff;color:#000;font-family:'IBM Plex Sans',Arial,sans-serif}
+  @page{margin:12mm}
+  body{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app" class="flex h-screen overflow-hidden">
+  <div id="overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="toggleSidebar(false)"></div>
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 shrink-0 -translate-x-full lg:translate-x-0 transition-transform flex flex-col" style="background:var(--ink)">
+    <div id="navRoot" class="flex flex-col h-full"></div>
+  </aside>
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="bg-white border-b border-slate-200 px-4 lg:px-7 py-3 flex items-center gap-3">
+      <button class="lg:hidden btn btn-ghost btn-sm" onclick="toggleSidebar(true)" aria-label="Buka menu"><i class="fa-solid fa-bars"></i></button>
+      <div id="hdrRoot" class="flex-1 flex items-center justify-between gap-3 min-w-0"></div>
+    </header>
+    <main id="content" class="flex-1 overflow-y-auto p-4 lg:p-7"></main>
+  </div>
+</div>
+<div id="loginRoot"></div>
+<div id="printArea"></div>
+<div id="modalRoot"></div>
+<div id="confirmRoot"></div>
+<div id="toasts" class="fixed bottom-4 right-4 z-[80] space-y-2"></div>
+
+<script type="text/plain" id="gsCode">
+/**
+ * Katamata Group - Backend Google Sheets (Google Apps Script)
+ * Tempel kode ini di: Google Sheet > Extensions (Ekstensi) > Apps Script
+ * Lalu ganti SECRET, Deploy sebagai Web App (Execute as: Me, Who has access: Anyone).
+ */
+var SECRET = 'GANTI_TOKEN_RAHASIA';
+var COLLECTIONS = ['orgs','categories','employees','vendors','locations','users','purchases','assets','loans','services','placements','activity'];
+var NUM_FIELDS = {price:1, warrantyValue:1, depMonths:1, cost:1, createdAt:1, updatedAt:1, ts:1, qty:1, sisaQty:1, allocatedQty:1, qtyAllocated:1};
+var BOOL_FIELDS = {hasSN:1}; // boolean disimpan sebagai teks 'true'/'false' agar aman di sel berformat teks
+var CHUNK = 45000; // batas sel Google Sheets = 50.000 karakter
+var API_VERSION = 4; // v4: stok berbasis Qty (qty, sisaQty, allocatedQty), kategori hasSN, alokasi ruangan (qtyAllocated, picName, receipt, serviceStatus)
+
+function doGet(e){
+  var p = (e && e.parameter) || {};
+  if(p.check !== undefined){ // diagnosa token: buka URL/exec?check=TOKEN_ANDA
+    var s = String(SECRET), t = String(p.check);
+    return out_({ok:true, version:API_VERSION, collections:COLLECTIONS, tokenMatch:(t.trim() === s.trim()), secretStillDefault:(s === 'GANTI_TOKEN_RAHASIA'), secretHasEdgeSpace:(s !== s.trim())});
+  }
+  return out_({ok:true, version:API_VERSION, collections:COLLECTIONS, message:'Katamata Group Sheets API aktif. Gunakan dari aplikasi Katamata Group.'});
+}
+
+function doPost(e){
+  var p;
+  try { p = JSON.parse(e.postData.contents); } catch(err){ return out_({ok:false, error:'Permintaan tidak valid'}); }
+  if(!p || String(p.token || '').trim() !== String(SECRET).trim()) return out_({ok:false, error:'Token salah'});
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(28000); } catch(err){ return out_({ok:false, error:'Server sibuk, coba lagi'}); }
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    if(p.action === 'ping') return out_({ok:true, rev:getRev_(ss), version:API_VERSION, collections:COLLECTIONS});
+    if(p.action === 'pull') return out_(pull_(ss));
+    if(p.action === 'users') return out_({ok:true, users:readSheet_(ss, 'users', ss.getSpreadsheetTimeZone())});
+    if(p.action === 'setUsers') return out_(setUsers_(ss, p));
+    if(p.action === 'shared') return out_(getShared_(ss));
+    if(p.action === 'setShared') return out_(setShared_(ss, p));
+    if(p.action === 'push') return out_(push_(ss, p));
+    return out_({ok:false, error:'Aksi tidak dikenal'});
+  } catch(err){
+    return out_({ok:false, error:String(err)});
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function out_(o){
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+function sheet_(ss, name){
+  var s = ss.getSheetByName(name);
+  if(!s) s = ss.insertSheet(name);
+  return s;
+}
+function ensure_(s, r, c){
+  if(s.getMaxRows() < r) s.insertRowsAfter(s.getMaxRows(), r - s.getMaxRows());
+  if(s.getMaxColumns() < c) s.insertColumnsAfter(s.getMaxColumns(), c - s.getMaxColumns());
+}
+function getRev_(ss){
+  var s = ss.getSheetByName('_meta');
+  if(!s) return 0;
+  return Number(s.getRange('B1').getValue()) || 0;
+}
+function setMeta_(ss, rev, user){
+  var s = sheet_(ss, '_meta');
+  var rg = s.getRange('A1:B3');
+  rg.setNumberFormat('@');
+  rg.setValues([['rev', rev], ['updatedAt', new Date().toISOString()], ['updatedBy', user || '']]);
+}
+
+/* ---------- PULL ---------- */
+function pull_(ss){
+  var tz = ss.getSpreadsheetTimeZone(), data = {}, files = {};
+  COLLECTIONS.forEach(function(name){ data[name] = readSheet_(ss, name, tz); });
+  var fs = ss.getSheetByName('_files');
+  if(fs && fs.getLastRow() > 1){
+    fs.getRange(2, 1, fs.getLastRow() - 1, 3).getValues().forEach(function(r){
+      if(!r[0]) return;
+      files[r[0]] = (files[r[0]] || '') + r[2];
+    });
+  }
+  return {ok:true, rev:getRev_(ss), version:API_VERSION, collections:COLLECTIONS, data:data, files:files};
+}
+function readSheet_(ss, name, tz){
+  var s = ss.getSheetByName(name);
+  if(!s || s.getLastRow() < 2 || s.getLastColumn() < 1) return [];
+  var v = s.getRange(1, 1, s.getLastRow(), s.getLastColumn()).getValues(), h = v[0], out = [];
+  for(var i = 1; i < v.length; i++){
+    if(v[i].join('') === '') continue;
+    var o = {};
+    for(var j = 0; j < h.length; j++){
+      var k = h[j]; if(k === '') continue;
+      var x = v[i][j];
+      if(x instanceof Date) x = Utilities.formatDate(x, tz, 'yyyy-MM-dd');
+      else if(typeof x === 'string' && x.indexOf('JSON:') === 0){ try { x = JSON.parse(x.substring(5)); } catch(e){} }
+      else if(BOOL_FIELDS[k]){ if(x === '') continue; x = (x === true || String(x).toLowerCase() === 'true'); }
+      else if(NUM_FIELDS[k]) x = (x === '' ? '' : Number(x));
+      else if(typeof x === 'number') x = String(x);
+      o[k] = x;
+    }
+    out.push(o);
+  }
+  return out;
+}
+
+/* ---------- PUSH ---------- */
+function push_(ss, p){
+  var cur = getRev_(ss);
+  if(Number(p.baseRev) !== cur) return {ok:false, conflict:true, rev:cur};
+  COLLECTIONS.forEach(function(name){ writeSheet_(ss, name, (p.data && p.data[name]) || []); });
+  writeFiles_(ss, p.files || {}, p.keepFiles || []);
+  var rev = cur + 1;
+  setMeta_(ss, rev, p.user);
+  return {ok:true, rev:rev, collections:COLLECTIONS};
+}
+var SHARED_KEYS = ['orgs','employees','vendors','locations'];
+function sharedMeta_(ss){
+  var s = sheet_(ss, '_shared'), m = {};
+  if(s.getLastRow() > 0) s.getRange(1, 1, s.getLastRow(), 2).getValues().forEach(function(r){ if(r[0] !== '') m[String(r[0])] = String(r[1]); });
+  return m;
+}
+function getShared_(ss){
+  var tz = ss.getSpreadsheetTimeZone(), data = {}, m = sharedMeta_(ss);
+  SHARED_KEYS.forEach(function(k){ data[k] = readSheet_(ss, 'shared_' + k, tz); });
+  return {ok:true, rev:Number(m.rev || 0), data:data, meta:m};
+}
+function setShared_(ss, p){
+  var m = sharedMeta_(ss), cur = Number(m.rev || 0);
+  if(Number(p.baseRev) !== cur) return {ok:false, conflict:true, rev:cur};
+  SHARED_KEYS.forEach(function(k){ if(p.data && p.data[k]) writeSheet_(ss, 'shared_' + k, p.data[k]); });
+  var pm = p.meta || {}; Object.keys(pm).forEach(function(k){ m[k] = pm[k]; });
+  m.rev = String(cur + 1);
+  var s = sheet_(ss, '_shared'), keys = Object.keys(m);
+  s.clear(); ensure_(s, keys.length, 2);
+  s.getRange(1, 1, keys.length, 2).setNumberFormat('@').setValues(keys.map(function(k){ return [k, m[k]]; }));
+  return {ok:true, rev:cur + 1};
+}
+function setUsers_(ss, p){
+  if(!p.users || !p.users.length) return {ok:false, error:'Daftar user kosong'};
+  var rev = getRev_(ss) + 1;
+  writeSheet_(ss, 'users', p.users);
+  setMeta_(ss, rev, p.user);
+  return {ok:true, rev:rev};
+}
+function writeSheet_(ss, name, rows){
+  var s = sheet_(ss, name);
+  s.clear();
+  if(!rows.length) return;
+  var h = [];
+  rows.forEach(function(r){ Object.keys(r).forEach(function(k){ if(h.indexOf(k) < 0) h.push(k); }); });
+  var idx = h.indexOf('id');
+  if(idx > 0){ h.splice(idx, 1); h.unshift('id'); }
+  var vals = [h];
+  rows.forEach(function(r){
+    vals.push(h.map(function(k){
+      var x = r[k];
+      if(x === null || x === undefined) return '';
+      if(typeof x === 'boolean') return x ? 'true' : 'false';
+      if(typeof x === 'object') return 'JSON:' + JSON.stringify(x);
+      return x;
+    }));
+  });
+  ensure_(s, vals.length, h.length);
+  var rg = s.getRange(1, 1, vals.length, h.length);
+  rg.setNumberFormat('@'); // teks: cegah Sheets mengubah tanggal/serial number
+  h.forEach(function(k, j){ if(NUM_FIELDS[k] && vals.length > 1) s.getRange(2, j + 1, vals.length - 1, 1).setNumberFormat('0'); });
+  rg.setValues(vals);
+  s.getRange(1, 1, 1, h.length).setFontWeight('bold').setBackground('#e6ecf5');
+  s.setFrozenRows(1);
+}
+function writeFiles_(ss, newFiles, keep){
+  var s = sheet_(ss, '_files'), map = {}, order = [];
+  if(s.getLastRow() > 1){
+    s.getRange(2, 1, s.getLastRow() - 1, 3).getValues().forEach(function(r){
+      if(!r[0]) return;
+      if(!map[r[0]]){ map[r[0]] = []; order.push(r[0]); }
+      map[r[0]].push(String(r[2]));
+    });
+  }
+  var keepSet = {}; keep.forEach(function(id){ keepSet[id] = 1; });
+  var changed = false, next = [], nextMap = {};
+  order.forEach(function(id){ if(keepSet[id]){ nextMap[id] = map[id]; next.push(id); } else changed = true; });
+  Object.keys(newFiles).forEach(function(id){
+    if(nextMap[id]) return;
+    var d = newFiles[id], parts = [];
+    for(var i = 0; i < d.length; i += CHUNK) parts.push(d.substr(i, CHUNK));
+    nextMap[id] = parts; next.push(id); changed = true;
+  });
+  if(!changed && s.getLastRow() > 0) return;
+  s.clear();
+  var rows = [['id', 'idx', 'chunk']];
+  next.forEach(function(id){ nextMap[id].forEach(function(c, i){ rows.push([id, i, c]); }); });
+  ensure_(s, rows.length, 3);
+  s.getRange(1, 1, rows.length, 3).setNumberFormat('@').setValues(rows);
+}
+</script>
+<script>
+/* =====================================================================
+   Katamata Group — System Asset Management (single file, LocalStorage)
+   ===================================================================== */
+const STORE_KEY = 'asetku_pm_db_v1';
+const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const MIN_DEP_PRICE = 500000;
+const CONDITIONS = ['Bagus','Rusak Ringan','Rusak Berat'];
+const ROLES = ['Super Admin','Admin','Manager','Supervisor','Staff'];
+let DB = null;
+const UI = { view:'dashboard', tab:{master:'org', reports:'dep'}, q:{}, f:{} };
+const TMP = {};
+let EDIT_PUR = null;
+
+/* ---------- Utilitas ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const num = n => Math.round(+n || 0).toLocaleString('id-ID');
+const idr = n => 'Rp ' + num(n);
+const pad = (n,l=2) => String(n).padStart(l,'0');
+const todayStr = () => { const d = new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
+const parseDate = s => { const [y,m,d] = String(s).split('-').map(Number); return new Date(y,(m||1)-1,d||1); };
+const fmtD = d => { if(!d) return '-'; if(typeof d === 'string') d = parseDate(d); return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear(); };
+const fmtDT = ts => { const d = new Date(ts); return fmtD(d)+', '+pad(d.getHours())+':'+pad(d.getMinutes()); };
+const val = id => { const e = document.getElementById(id); return e ? e.value : ''; };
+const moneyVal = id => +String(val(id)).replace(/\D/g,'') || 0;
+const byId = (l,id) => l.find(x => x.id === id);
+const match = (q, ...arr) => !q || arr.some(s => String(s ?? '').toLowerCase().includes(q.toLowerCase()));
+
+/* ---------- Lookup ---------- */
+const orgName = id => (byId(DB.orgs,id)||{}).name || '-';
+const catNameById = id => (byId(DB.categories,id)||{}).name || '-';
+const catName = a => catNameById(a.catId);
+const empName = id => (byId(DB.employees,id)||{}).name || '-';
+const vendorName = id => (byId(DB.vendors,id)||{}).name || '-';
+const itemTitle = a => catName(a)+' '+a.brand+' '+a.type;
+const currentUser = () => byId(DB.users, DB.session.userId);
+const realUser = () => byId(DB.users, DB.session.realUserId || DB.session.userId) || currentUser();
+const can = () => { const u = currentUser(); return !!u && (u.role === 'Super Admin' || u.role === 'Admin'); };
+const isSA = () => { const u = currentUser(); return !!u && u.role === 'Super Admin'; };
+const activePlacements = id => (DB.placements || []).filter(p => p.assetId === id && p.status === 'active');
+const activePlacement = id => activePlacements(id)[0];
+const truthy = v => v === true || String(v).toLowerCase() === 'true';
+const catHasSN = id => { const c = byId(DB.categories, id); return !c || c.hasSN === undefined || c.hasSN === '' ? true : truthy(c.hasSN); };
+const assetHasSN = a => (a.hasSN === undefined || a.hasSN === '') ? catHasSN(a.catId) : truthy(a.hasSN);
+const totalPrice = a => (+a.price || 0) * (+a.qty || 1);
+const allocQty = id => activePlacements(id).reduce((s,p) => s + (+p.qtyAllocated || 0), 0);
+// sisaQty = totalBeli - totalQtyDiSemuaRuangan
+const sisaQty = a => Math.max(0, (+a.qty || 1) - allocQty(a.id));
+function placementsText(a){
+  const parts = activePlacements(a.id).map(p => `<div class="mb-1"><span class="badge b-blue"><i class="fa-solid fa-location-dot"></i>${num(p.qtyAllocated)} unit</span> ${esc(p.room)}, ${esc(p.location)} <span class="text-xs text-slate-500">sejak ${fmtD(p.date)}</span></div>`);
+  parts.push(`<div><span class="badge b-green">${sisaQty(a)} unit</span> di Stok Aset Utama</div>`);
+  return parts.join('');
+}
+// Menyimpan nilai turunan (allocatedQty, sisaQty) ke tiap barang agar ikut tersinkron ke Google Sheets
+function syncAssetLocations(db){
+  const al = {};
+  (db.placements || []).forEach(p => { if(p.status === 'active') al[p.assetId] = (al[p.assetId] || 0) + (+p.qtyAllocated || 0); });
+  db.assets.forEach(a => { a.allocatedQty = al[a.id] || 0; a.sisaQty = Math.max(0, (+a.qty || 1) - a.allocatedQty); delete a.loanedQty; });
+}
+function normalizeDB(d){
+  d.placements = d.placements || []; d.activity = d.activity || [];
+  d.users.forEach(u => { u.accessDomain = u.role === 'Super Admin' ? 'ALL' : domainOf(u); });
+  d.services.forEach(sv => { if(sv.invoice === undefined || sv.invoice === null) sv.invoice = ''; });
+  d.categories.forEach(c => { c.hasSN = (c.hasSN === undefined || c.hasSN === '') ? true : truthy(c.hasSN); });
+  d.assets.forEach(a => { a.qty = Math.max(1, parseInt(a.qty, 10) || 1); const c = d.categories.find(x => x.id === a.catId); a.hasSN = (a.hasSN === undefined || a.hasSN === '') ? (c ? c.hasSN : true) : truthy(a.hasSN); });
+  d.placements.forEach(p => { p.qtyAllocated = parseInt(p.qtyAllocated, 10) || 1; p.serviceStatus = p.serviceStatus || 'Normal'; p.picName = p.picName || ''; });
+  d.loans = []; // menu Peminjaman dihapus; koleksi 'loans' dibiarkan kosong demi kompatibilitas Sheets
+  syncAssetLocations(d); return d;
+}
+function guardDel(){ if(!isSA()){ toast('Hanya Super Admin yang dapat menghapus data.','error'); return false; } return true; }
+const delBtn = (fn, ...a) => isSA() ? `<button class="btn btn-danger btn-sm" onclick="${fn}(${a.map(x => "'"+x+"'").join(',')})" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : '';
+const inService = id => DB.services.some(s => s.assetId === id && s.status === 'Dalam Perbaikan');
+function guard(){ if(!can()){ toast('Akses ditolak: role '+(currentUser()||{}).role+' hanya dapat melihat data.','error'); return false; } return true; }
+function guardSA(){ if(!isSA()){ toast('Hanya Super Admin yang dapat melakukan tindakan ini.','error'); return false; } return true; }
+/* ---------- Autentikasi ---------- */
+function sha256(ascii){
+  const rr = (v,a) => (v>>>a)|(v<<(32-a));
+  const maxWord = Math.pow(2,32); let result = '', words = [], bitLen = ascii.length*8;
+  let hash = sha256.h = sha256.h || [], k = sha256.k = sha256.k || [], pc = k.length; const comp = {};
+  for(let c = 2; pc < 64; c++){ if(!comp[c]){ for(let i = 0; i < 313; i += c) comp[i] = c; hash[pc] = (Math.pow(c,.5)*maxWord)|0; k[pc++] = (Math.pow(c,1/3)*maxWord)|0; } }
+  ascii += '\x80'; while(ascii.length % 64 - 56) ascii += '\x00';
+  for(let i = 0; i < ascii.length; i++){ const j = ascii.charCodeAt(i); words[i>>2] |= j << ((3-i)%4)*8; }
+  words[words.length] = ((bitLen/maxWord)|0); words[words.length] = bitLen;
+  for(let j = 0; j < words.length;){
+    const w = words.slice(j, j += 16), old = hash; hash = hash.slice(0,8);
+    for(let i = 0; i < 64; i++){
+      const w15 = w[i-15], w2 = w[i-2], a = hash[0], e = hash[4];
+      const t1 = hash[7] + (rr(e,6)^rr(e,11)^rr(e,25)) + ((e&hash[5])^((~e)&hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i-16] + (rr(w15,7)^rr(w15,18)^(w15>>>3)) + w[i-7] + (rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      const t2 = (rr(a,2)^rr(a,13)^rr(a,22)) + ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash = [(t1+t2)|0].concat(hash); hash[4] = (hash[4] + t1)|0;
+    }
+    for(let i = 0; i < 8; i++) hash[i] = (hash[i] + old[i])|0;
+  }
+  for(let i = 0; i < 8; i++) for(let j = 3; j + 1; j--){ const b = (hash[i]>>(j*8))&255; result += ((b < 16) ? 0 : '') + b.toString(16); }
+  return result;
+}
+const hashPw = pw => sha256(unescape(encodeURIComponent('asetku:'+pw)));
+const defaultPw = role => (role === 'Super Admin' || role === 'Admin') ? 'admin123' : 'user123';
+function ensurePasswords(db){ let n = 0; db.users.forEach(u => { if(!u.passHash){ u.passHash = hashPw(defaultPw(u.role)); n++; } }); return n; }
+let LOGIN_FAILS = 0, LOGIN_LOCK = 0;
+function log(text){ DB.activity.unshift({ts:Date.now(), text, user:(currentUser()||{}).name||'-'}); DB.activity = DB.activity.slice(0,40); }
+
+/* ---------- Registry bersama (user + sesi) & hak akses sistem (IT / PM) ---------- */
+const REG_KEY = 'asetku_db_v1';                 // registry bersama: users + session (dibaca juga oleh index.html)
+const LEGACY_KEY = 'asetku_legacy_backup_v1';   // salinan data lama (sebelum IT & PM dipisah)
+const APP_DOMAIN = 'PM';
+const APP_PAGE = {IT:'IT.html', PM:'pm.html'};
+const APP_NAME = {IT:'Sistem IT', PM:'Sistem Property Management'};
+const ACCESS_OPTS = [['ALL','Semua Akses (IT & Property)'],['IT','Hanya Aset IT'],['PM','Hanya Property Management']];
+const ACCESS_SHORT = {ALL:'IT & Property', IT:'Hanya IT', PM:'Hanya Property'};
+let USERS_SIG = '', _accessBlocked = false;
+const domainOf = u => (u && ACCESS_SHORT[u.accessDomain] ? u.accessDomain : 'ALL');
+function regRead(){ try { const r = JSON.parse(localStorage.getItem(REG_KEY)); if(r && r.registry === 1 && Array.isArray(r.users)) return r; } catch(e){} return null; }
+function regWrite(){
+  try {
+    const cur = regRead(), sig = JSON.stringify(DB.users);
+    const users = (!cur || sig !== USERS_SIG) ? DB.users : cur.users;   // user hanya ditimpa bila diubah di tab ini
+    localStorage.setItem(REG_KEY, JSON.stringify({registry:1, seed:false, users, session:DB.session || {userId:null, realUserId:null}, updatedAt:Date.now()}));
+    if(users === DB.users) USERS_SIG = sig;
+  } catch(e){}
+}
+function migrateLegacy(){ // key lama 'asetku_db_v1' dulu berisi seluruh database; simpan salinannya lalu ubah menjadi registry
+  try {
+    const raw = localStorage.getItem(REG_KEY); if(!raw) return;
+    const d = JSON.parse(raw); if(!d || d.registry === 1 || !Array.isArray(d.assets)) return;
+    if(!localStorage.getItem(LEGACY_KEY)) localStorage.setItem(LEGACY_KEY, raw);
+    localStorage.setItem(REG_KEY, JSON.stringify({registry:1, seed:false, users:d.users || [], session:d.session || {userId:null, realUserId:null}, updatedAt:Date.now()}));
+  } catch(e){}
+}
+function claimLegacy(){ // ambil data lama bila milik aplikasi ini (PM = aset punya field qty)
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY); if(!raw) return null;
+    const d = JSON.parse(raw); if(!validDB(d)) return null;
+    const isPM = d.assets.some(a => a && a.qty !== undefined);
+    return isPM === (APP_DOMAIN === 'PM') ? d : null;
+  } catch(e){ return null; }
+}
+function reconcileRegistry(){
+  const r = regRead();
+  if(r && !r.seed && r.users.length) DB.users = r.users;   // registry = sumber kebenaran user di browser ini
+  normalizeDB(DB); ensurePasswords(DB);
+  DB.session = (r && r.session) || DB.session || {userId:null, realUserId:null};
+  if(!byId(DB.users, DB.session.userId) || !byId(DB.users, DB.session.realUserId || DB.session.userId)) DB.session = {userId:null, realUserId:null};
+  USERS_SIG = ''; regWrite();
+}
+/* ---------- User terpusat: satu daftar user untuk IT & PM ---------- */
+// Database user pusat = Google Sheet sistem pertama yang terisi di config.js (IT diutamakan, lalu PM).
+const USERS_MASTER = (() => { const c = window.KATAMATA_CONFIG || {}; return ['IT','PM'].find(k => c[k] && c[k].url && c[k].token) || null; })();
+const IS_MASTER = !USERS_MASTER || USERS_MASTER === APP_DOMAIN;
+const USERS_CFG = (USERS_MASTER && !IS_MASTER) ? window.KATAMATA_CONFIG[USERS_MASTER] : null;
+let MASTER_SIG = null, USERS_FAIL_SIG = null, usersTimer = null, usersPushing = false, usersPollTimer = null;
+function normUsers(list){ return (list || []).filter(u => u && u.id && u.username && u.passHash).map(u => Object.assign({}, u, {accessDomain: u.role === 'Super Admin' ? 'ALL' : domainOf(u)})); }
+async function fetchMasterUsers(){
+  let r = await sheetsCall({action:'users'}, USERS_CFG);
+  if(r && r.ok && Array.isArray(r.users)) return r.users;
+  r = await sheetsCall({action:'pull'}, USERS_CFG); // Code.gs lama belum mengenal aksi 'users'
+  if(r && r.ok && r.data && Array.isArray(r.data.users)) return r.data.users;
+  throw new Error((r && r.error) || 'gagal membaca user pusat');
+}
+async function pullUsersFromMaster(){ // true bila daftar user lokal berubah
+  if(!USERS_CFG || usersTimer || usersPushing) return false;
+  const users = normUsers(await fetchMasterUsers());
+  if(!users.length) return false;
+  const sig = JSON.stringify(users); MASTER_SIG = sig;
+  if(sig === JSON.stringify(DB.users)) return false;
+  DB.users = users;
+  const s = DB.session || {};
+  if(!byId(users, s.userId) || !byId(users, s.realUserId || s.userId)) DB.session = {userId:null, realUserId:null};
+  saveLocal(); return true;
+}
+function usersChangedCheck(){ // dipanggil setiap saveLocal: kirim perubahan user ke database pusat
+  if(!USERS_CFG || MASTER_SIG === null) return;
+  const sig = JSON.stringify(DB.users);
+  if(sig === MASTER_SIG || sig === USERS_FAIL_SIG) return;
+  clearTimeout(usersTimer); usersTimer = setTimeout(() => { usersTimer = null; pushUsersToMaster(); }, 800);
+}
+async function pushUsersToMaster(){
+  if(!USERS_CFG || usersPushing) return;
+  usersPushing = true; const sig = JSON.stringify(DB.users);
+  try {
+    const r = await sheetsCall({action:'setUsers', users:DB.users, user:(realUser() || {}).name || ''}, USERS_CFG);
+    if(r && r.ok){ MASTER_SIG = sig; USERS_FAIL_SIG = null; }
+    else throw new Error((r && r.error) || 'gagal');
+  } catch(e){
+    USERS_FAIL_SIG = sig;
+    toast('Daftar user belum tersimpan ke database pusat ('+e.message+'). Pastikan kode Apps Script sistem '+USERS_MASTER+' sudah versi terbaru lalu buat New version.','error');
+  }
+  usersPushing = false;
+}
+async function flushUsers(){ if(usersTimer){ clearTimeout(usersTimer); usersTimer = null; await pushUsersToMaster(); } }
+function startUsersPolling(){
+  if(!USERS_CFG) return; clearInterval(usersPollTimer);
+  usersPollTimer = setInterval(async () => {
+    if($('#modalRoot').innerHTML || $('#confirmRoot').innerHTML) return;
+    try { if(await pullUsersFromMaster()) render(); } catch(e){}
+  }, 30000);
+}
+/* ---------- SHARED DATA MASTER: Organisasi, Karyawan, Vendor, Lokasi & Ruangan dibagikan IT <-> PM ---------- */
+// Kategori & Nama Barang TIDAK ikut dibagikan (tetap mandiri per sistem).
+// Penyimpanan bersama: LocalStorage ('asetku_shared_v1') bila Google Sheets tidak dipakai,
+// atau tab shared_* pada Google Sheet database pusat (sistem pertama yang terisi di config.js).
+const SH_KEYS = ['orgs','employees','vendors','locations'];
+const SH_LS = 'asetku_shared_v1', SH_PEND = 'asetku_shpending_'+APP_DOMAIN+'_v1';
+const SH_REFS = {orgs:['orgId'], employees:['empId','submitterId'], vendors:['vendorId']};
+const SH_TXN = ['assets','purchases','loans','services','placements'];
+const SH_OTHER = APP_DOMAIN === 'IT' ? 'PM' : 'IT';
+const SH_REMOTE = USERS_MASTER ? Object.assign({}, window.KATAMATA_CONFIG[USERS_MASTER]) : null;
+let SH_BASE = null, SH_READY = false, shTimer = null, shBusy = false, shAgain = false, shWarned = false, shFailAt = 0, shPollT = null;
+const shClone = o => JSON.parse(JSON.stringify(o));
+const shPick = src => { const o = {}; SH_KEYS.forEach(k => { o[k] = shClone((src && src[k]) || []); }); return o; };
+function shCanon(v){ // bentuk baku: kunci terurut, nilai kosong diabaikan (representasi Sheets vs lokal bisa berbeda)
+  if(Array.isArray(v)) return v.map(shCanon);
+  if(v && typeof v === 'object'){ const o = {}; Object.keys(v).sort().forEach(k => { const x = v[k]; if(x === '' || x === null || x === undefined) return; o[k] = shCanon(x); }); return o; }
+  return v;
+}
+const shStr = v => JSON.stringify(shCanon(v));
+const shListStr = list => shStr((list || []).slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+function shDiff(base, cur){ // operasi per item: tambah / ubah / hapus
+  const ops = {}; let any = false;
+  SH_KEYS.forEach(k => {
+    const b = new Map((base[k] || []).map(x => [x.id, x])), c = new Map((cur[k] || []).map(x => [x.id, x])), o = {add:[], upd:[], del:[]};
+    c.forEach((x, id) => { if(!b.has(id)) o.add.push(x); else if(shStr(b.get(id)) !== shStr(x)) o.upd.push(x); });
+    b.forEach((x, id) => { if(!c.has(id)) o.del.push(id); });
+    if(o.add.length || o.upd.length || o.del.length){ any = true; ops[k] = o; }
+  });
+  return any ? ops : null;
+}
+function shApply(target, ops){ // terapkan operasi ke snapshot terbaru (penghapusan data yang dipakai sistem lain dibatalkan)
+  const out = shPick(target), ou = (target.usage || {})[SH_OTHER] || {};
+  SH_KEYS.forEach(k => {
+    const o = ops[k]; if(!o) return;
+    let list = out[k].filter(x => !(o.del.includes(x.id) && !(ou[k] || []).includes(x.id)));
+    o.upd.concat(o.add).forEach(x => { const i = list.findIndex(y => y.id === x.id); if(i >= 0) list[i] = shClone(x); else list.push(shClone(x)); });
+    out[k] = list;
+  });
+  return out;
+}
+function shUsage(){ // ID master yang dipakai transaksi sistem ini (dibaca sistem lain sebelum menghapus)
+  const u = {}; SH_KEYS.forEach(k => { u[k] = new Set(); });
+  SH_TXN.forEach(c => (DB[c] || []).forEach(r => Object.keys(SH_REFS).forEach(k => SH_REFS[k].forEach(f => { if(r[f]) u[k].add(r[f]); }))));
+  const o = {}; SH_KEYS.forEach(k => { o[k] = [...u[k]].sort(); }); return o;
+}
+function shUsedByOther(key, id){ const u = ((SH_BASE && SH_BASE.usage) || {})[SH_OTHER]; return !!(u && (u[key] || []).includes(id)); }
+function shRemap(maps){ // petakan ulang referensi pada transaksi bila ID master berubah saat penggabungan
+  SH_TXN.forEach(c => (DB[c] || []).forEach(r => Object.keys(SH_REFS).forEach(k => SH_REFS[k].forEach(f => { const m = maps[k][r[f]]; if(r[f] && m && m !== r[f]) r[f] = m; }))));
+}
+function shMergeLocal(S){ // gabungkan master lokal ke snapshot bersama tanpa duplikat (kunci alami: kode org, nama+org, nama vendor, lokasi+ruangan)
+  const out = shPick(S), maps = {orgs:{}, employees:{}, vendors:{}, locations:{}};
+  const low = v => String(v == null ? '' : v).trim().toLowerCase();
+  const nk = {orgs:x => low(x.code) || low(x.name), employees:x => low(x.name)+'|'+x.orgId, vendors:x => low(x.name), locations:x => low(x.location)+'|'+low(x.room)};
+  const pre = {orgs:'org_', employees:'emp_', vendors:'ven_', locations:'loc_'};
+  SH_KEYS.forEach(k => (DB[k] || []).forEach(L => {
+    const X = shClone(L); if(k === 'employees') X.orgId = maps.orgs[X.orgId] || X.orgId;
+    const key = nk[k](X), hit = out[k].find(y => nk[k](y) === key);
+    if(hit){ maps[k][L.id] = hit.id; return; }
+    if(out[k].some(y => y.id === X.id)) X.id = uid(pre[k]);
+    maps[k][L.id] = X.id; out[k].push(X);
+  }));
+  shRemap(maps); return out;
+}
+function shParse(r){
+  const m = r.meta || {}, S = {usage:{}, joined:{}, rev:Number(r.rev) || 0};
+  SH_KEYS.forEach(k => { S[k] = (r.data || {})[k] || []; });
+  ['IT','PM'].forEach(a => { try { if(m['usage:'+a]) S.usage[a] = JSON.parse(m['usage:'+a]); } catch(e){} if(m['joined:'+a]) S.joined[a] = true; });
+  return S;
+}
+async function shRemote(){
+  const r = await Promise.race([sheetsCall({action:'shared'}, SH_REMOTE), new Promise((_, rej) => setTimeout(() => rej(new Error('waktu habis')), 12000))]);
+  if(!r || !r.ok) throw new Error((r && r.error) || 'gagal membaca data master bersama');
+  const S = shParse(r); return (S.rev === 0 && !SH_KEYS.some(k => S[k].length)) ? null : S;
+}
+function shLocal(){ try { const d = JSON.parse(localStorage.getItem(SH_LS)); if(d && SH_KEYS.every(k => Array.isArray(d[k]))){ d.usage = d.usage || {}; d.joined = d.joined || {}; d.rev = d.rev || 0; return d; } } catch(e){} return null; }
+function shLocalWrite(S){ try { localStorage.setItem(SH_LS, JSON.stringify(S)); } catch(e){} }
+async function shLoad(){ // snapshot terbaru: database pusat bila tersedia, jika gagal memakai salinan lokal
+  if(SH_REMOTE){
+    try { const S = await shRemote(); if(S) shLocalWrite(S); return S; }
+    catch(e){ if(!shWarned){ shWarned = true; toast('Data master bersama: database pusat tidak dapat diakses ('+e.message+'). Memakai salinan lokal. Pastikan kode Apps Script sistem '+USERS_MASTER+' sudah versi terbaru lalu buat New version.','error'); } }
+  }
+  return shLocal();
+}
+async function shWrite(S){ // true = tersimpan, false = konflik versi (ulangi dari snapshot terbaru)
+  if(SH_REMOTE){
+    const meta = {}; meta['usage:'+APP_DOMAIN] = JSON.stringify(S.usage[APP_DOMAIN] || {}); meta['joined:'+APP_DOMAIN] = '1';
+    const data = {}; SH_KEYS.forEach(k => { data[k] = S[k]; });
+    const r = await sheetsCall({action:'setShared', baseRev:S.rev, data, meta, user:(realUser() || {}).name || ''}, SH_REMOTE);
+    if(r && r.conflict) return false;
+    if(!r || !r.ok) throw new Error((r && r.error) || 'gagal menyimpan');
+    S.rev = r.rev;
+  } else {
+    const cur = shLocal(); if(cur && (cur.rev || 0) !== (S.rev || 0)) return false;
+    S.rev = (S.rev || 0) + 1;
+  }
+  shLocalWrite(S); return true;
+}
+function shSettle(S){ // jadikan S sebagai acuan & perbarui DB lokal bila berbeda
+  SH_BASE = S; let changed = false;
+  SH_KEYS.forEach(k => { if(shListStr(DB[k]) !== shListStr(S[k])){ DB[k] = shClone(S[k]); changed = true; } });
+  if(changed){ saveLocal(); if(!$('#modalRoot').innerHTML && !$('#confirmRoot').innerHTML) render(); }
+  return changed;
+}
+const shUsageStr = () => shStr(shUsage());
+const shBaseUsageStr = () => shStr(((SH_BASE && SH_BASE.usage) || {})[APP_DOMAIN] || {});
+function shSchedule(){ clearTimeout(shTimer); shTimer = setTimeout(() => { shTimer = null; shCommit(); }, 800); }
+function sharedChangedCheck(){ // dipanggil setiap saveLocal
+  if(!SH_READY) return;
+  if(shDiff(SH_BASE, shPick(DB)) || shUsageStr() !== shBaseUsageStr()) shSchedule();
+}
+async function shCommit(){
+  if(!SH_READY) return;
+  if(shBusy){ shAgain = true; return; }
+  const ops = shDiff(SH_BASE, shPick(DB)), usage = shUsage();
+  const need = ops || shStr(usage) !== shBaseUsageStr() || !(SH_BASE.joined || {})[APP_DOMAIN];
+  if(!need) return;
+  shBusy = true;
+  try {
+    let done = false;
+    for(let i = 0; i < 4 && !done; i++){
+      const T = (await shLoad()) || {orgs:[], employees:[], vendors:[], locations:[], usage:{}, joined:{}, rev:0};
+      const joiningNow = !(SH_BASE.joined || {})[APP_DOMAIN] && !(T.joined || {})[APP_DOMAIN] && SH_KEYS.some(k => T[k].length);
+      const S = joiningNow ? shMergeLocal(T) : (ops ? shApply(T, ops) : shPick(T)); // penyimpanan sudah dibuat sistem lain: gabungkan, jangan menimpa
+      S.usage = Object.assign({}, T.usage, {[APP_DOMAIN]:usage}); S.joined = Object.assign({}, T.joined, {[APP_DOMAIN]:true}); S.rev = T.rev || 0;
+      if(await shWrite(S)){ done = true; shSettle(S); }
+    }
+    if(!done) throw new Error('konflik berulang');
+    try { localStorage.removeItem(SH_PEND); } catch(e){}
+  } catch(e){
+    try { localStorage.setItem(SH_PEND, JSON.stringify(ops || {})); } catch(x){}
+    if(Date.now() - shFailAt > 60000){ shFailAt = Date.now(); toast('Data master belum tersimpan ke penyimpanan bersama ('+e.message+'). Akan dicoba lagi otomatis.','error'); }
+  }
+  shBusy = false; if(shAgain){ shAgain = false; shSchedule(); }
+}
+async function sharedBoot(){
+  let S = await shLoad();
+  if(!S){ SH_BASE = {orgs:[], employees:[], vendors:[], locations:[], usage:{}, joined:{}, rev:0}; }
+  else if(!(S.joined || {})[APP_DOMAIN]){ // pertama kali bergabung: gabungkan master lokal (tanpa duplikat) + petakan ulang referensi
+    SH_BASE = S; const m = shMergeLocal(S); SH_KEYS.forEach(k => { DB[k] = m[k]; });
+  } else {
+    SH_BASE = S; SH_KEYS.forEach(k => { if(shListStr(DB[k]) !== shListStr(S[k])) DB[k] = shClone(S[k]); });
+    try { const p = JSON.parse(localStorage.getItem(SH_PEND) || 'null'); if(p && Object.keys(p).length){ const m = shApply(S, p); SH_KEYS.forEach(k => { DB[k] = m[k]; }); } } catch(e){} // perubahan yang belum sempat terkirim
+  }
+  saveLocal(); SH_READY = true;
+  await shCommit();
+  shStart();
+}
+function shAfterReset(){ // "Reset ke data contoh": master contoh digabung ke master bersama (tidak menghapus data master yang ada)
+  if(!SH_READY) return;
+  const m = shMergeLocal(SH_BASE); SH_KEYS.forEach(k => { DB[k] = m[k]; });
+}
+function shStart(){
+  clearInterval(shPollT);
+  shPollT = setInterval(async () => {
+    if(!SH_READY || shBusy || shTimer || $('#modalRoot').innerHTML || $('#confirmRoot').innerHTML) return;
+    try {
+      if(localStorage.getItem(SH_PEND)){ await shCommit(); return; }
+      const S = await shLoad(); if(S) shRefresh(S);
+    } catch(e){}
+  }, 30000);
+  window.addEventListener('storage', e => { // perubahan dari sistem lain di browser yang sama (tab lain)
+    if(e.key !== SH_LS || !SH_READY || shBusy || shTimer) return;
+    const S = shLocal(); if(S) shRefresh(S);
+  });
+}
+function shRefresh(S){
+  const mDiff = SH_KEYS.some(k => shListStr(S[k]) !== shListStr(SH_BASE[k])), uDiff = shStr(S.usage) !== shStr(SH_BASE.usage);
+  if(!mDiff && !uDiff) return;
+  const changed = shSettle(S); if(changed && mDiff) toast('Data master diperbarui dari sistem lain.');
+  else SH_BASE = S;
+}
+function shBanner(tab){
+  const shared = ['org','employee','vendor','location'].includes(tab), where = SH_REMOTE ? 'tersimpan di Google Sheets' : 'tersimpan di LocalStorage browser ini';
+  return `<div class="flex items-start gap-2 text-xs rounded-lg px-3 py-2 mb-3" style="background:${shared ? '#eaf3ff' : '#f6f8fa'};border:1px solid var(--line);color:#465466"><i class="fa-solid ${shared ? 'fa-share-nodes' : 'fa-lock'} mt-0.5"></i><span>${shared ? 'Data ini <b>dibagikan</b> antara sistem Aset IT dan Property Management ('+where+'). Perubahan di salah satu sistem otomatis berlaku di sistem lainnya.' : 'Data ini <b>khusus sistem '+(APP_DOMAIN === 'IT' ? 'Aset IT' : 'Property Management')+'</b> dan tidak dibagikan ke sistem lain.'}</span></div>`;
+}
+let _leaving = false;
+function goPortal(){ // belum login / sudah keluar -> kembali ke portal (login hanya di index.html)
+  if(_leaving) return; _leaving = true;
+  const app = $('#app'); if(app) app.style.display = 'none';
+  const lr = $('#loginRoot'); if(lr) lr.innerHTML = '<div class="min-h-screen flex items-center justify-center"><i class="fa-solid fa-circle-notch fa-spin text-3xl" style="color:var(--brand)"></i></div>';
+  location.replace('index.html');
+}
+window.addEventListener('storage', e => { // logout dari tab lain -> ikut kembali ke portal
+  if(e.key !== REG_KEY) return;
+  const r = regRead(); if(r && !(r.session || {}).userId && DB && DB.session && DB.session.userId) goPortal();
+});
+function enforceAccess(){ // proteksi halaman: user dengan accessDomain lain diblokir & dialihkan
+  const s = DB.session || {}, u = byId(DB.users, s.realUserId || s.userId);
+  if(!u) return true;
+  const d = domainOf(u);
+  if(d === 'ALL' || d === APP_DOMAIN) return true;
+  if(!_accessBlocked){
+    _accessBlocked = true;
+    const app = $('#app'); if(app) app.style.display = 'none';
+    const lr = $('#loginRoot'); if(lr) lr.innerHTML = '';
+    toast('Akses Ditolak: Anda tidak memiliki izin ke '+APP_NAME[APP_DOMAIN]+'.','error');
+    setTimeout(() => location.replace(APP_PAGE[d]), 1800);
+  }
+  return false;
+}
+
+/* ---------- Kode barang, penyusutan, garansi ---------- */
+function codePrefix(orgId, catId){
+  const o = byId(DB.orgs,orgId), c = byId(DB.categories,catId);
+  return o && c ? o.code+'/'+c.code : null;
+}
+function nextSeq(orgId, catId, year){
+  const p = codePrefix(orgId,catId); if(!p) return 1;
+  let max = 0;
+  DB.assets.forEach(a => {
+    const x = a.code.split('/');
+    if(x.length === 4 && x[0]+'/'+x[1] === p && x[3] === String(year)) max = Math.max(max, parseInt(x[2],10) || 0);
+  });
+  return max + 1;
+}
+function genCode(orgId, catId, year){
+  const p = codePrefix(orgId,catId); if(!p) return '';
+  return p+'/'+pad(nextSeq(orgId,catId,year),3)+'/'+year;
+}
+function depInfo(a, now=new Date()){
+  const unit = +a.price || 0, price = unit * (+a.qty || 1), life = +a.depMonths || 0;
+  if(unit < MIN_DEP_PRICE || life <= 0) return {period:0, life:0, monthly:0, accum:0, book:price, dep:false};
+  const b = parseDate(a.buyDate);
+  const diff = (now.getFullYear()-b.getFullYear())*12 + (now.getMonth()-b.getMonth());
+  const period = Math.min(life, Math.max(1, diff+1));
+  const monthly = price/life;
+  const accum = Math.min(price, monthly*period);
+  return {period, life, monthly, accum, book: price-accum, dep:true};
+}
+function warrantyInfo(a){
+  const v = +a.warrantyValue || 0;
+  if(v <= 0) return {status:'none', label:'Tanpa Garansi', end:null, days:0};
+  const end = parseDate(a.buyDate);
+  end.setMonth(end.getMonth() + (a.warrantyUnit === 'year' ? v*12 : v));
+  const t = new Date(); t.setHours(0,0,0,0);
+  const active = t <= end;
+  return {status: active ? 'active' : 'expired', label: active ? 'Garansi Aktif' : 'Garansi Expired', end, days: Math.ceil((end-t)/86400000)};
+}
+const warrantyText = a => (+a.warrantyValue||0) > 0 ? a.warrantyValue+' '+(a.warrantyUnit === 'year' ? 'tahun' : 'bulan') : '-';
+function warrantyBadge(a){
+  const w = warrantyInfo(a);
+  const cls = w.status === 'active' ? 'b-green' : w.status === 'expired' ? 'b-red' : 'b-gray';
+  const ic = w.status === 'active' ? 'fa-shield-halved' : w.status === 'expired' ? 'fa-shield' : 'fa-minus';
+  return `<span class="badge ${cls}"><i class="fa-solid ${ic}"></i>${w.label}</span>`;
+}
+function condBadge(c){
+  const cls = c === 'Bagus' ? 'b-green' : c === 'Rusak Ringan' ? 'b-amber' : 'b-red';
+  return `<span class="badge ${cls}">${esc(c)}</span>`;
+}
+function svcBadge(id){
+  return inService(id)
+    ? `<span class="badge b-amber"><i class="fa-solid fa-screwdriver-wrench"></i>Dalam Perbaikan</span>`
+    : `<span class="badge b-gray">Normal</span>`;
+}
+function placeholderImg(txt){
+  const colors = ['#163a6b','#a34a0a','#0f6b5c','#7a2e6e','#5a6a1a','#8f2f2f'];
+  let h = 0; for(const ch of txt) h = (h*31 + ch.charCodeAt(0)) % colors.length;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect width='120' height='120' rx='14' fill='${colors[h]}'/><text x='60' y='74' font-family='Arial,sans-serif' font-size='38' font-weight='700' fill='white' text-anchor='middle'>${esc(txt.slice(0,2).toUpperCase())}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+const imgOf = a => a.image || placeholderImg(catName(a));
+
+/* ---------- Transaksi inti ---------- */
+function createPurchase(d){
+  const year = parseDate(d.buyDate).getFullYear();
+  const code = genCode(d.orgId, d.catId, year);
+  const pid = uid('pur_'), aid = uid('ast_');
+  const emp = byId(DB.employees, d.submitterId) || {};
+  DB.assets.push({
+    id:aid, purchaseId:pid, code, orgId:d.orgId, catId:d.catId, brand:d.brand, type:d.type, serial:catHasSN(d.catId) ? d.serial : '', spec:catHasSN(d.catId) ? d.spec : '', qty:Math.max(1, parseInt(d.qty,10) || 1), hasSN:catHasSN(d.catId),
+    image:d.image||'', vendorId:d.vendorId, buyDate:d.buyDate, price:+d.price, invoice:d.invoice,
+    warrantyValue:+d.warrantyValue||0, warrantyUnit:d.warrantyUnit||'year', depMonths:+d.price >= MIN_DEP_PRICE ? (+d.depMonths||0) : 0,
+    condition:d.condition||'Bagus', note:d.note||'', createdAt:Date.now()
+  });
+  DB.purchases.push({ id:pid, assetId:aid, code, submitterId:d.submitterId, dept:emp.dept||'', position:emp.position||'', proof:d.proof||null, createdAt:Date.now() });
+  return byId(DB.assets, aid);
+}
+/* ---------- Data awal (mock) ---------- */
+function makeSeed(){
+  DB = {version:1, session:{userId:null, realUserId:null}, orgs:[], categories:[], employees:[], vendors:[], locations:[], users:[], purchases:[], assets:[], loans:[], services:[], placements:[], activity:[]};
+  DB.orgs.push({id:'org_km', name:'Katamata', code:'KM'}, {id:'org_vbi', name:'Visi Berkat Indonesia', code:'VBI'});
+  DB.categories.push(
+    {id:'cat_it01', name:'Laptop', code:'IT01'}, {id:'cat_it02', name:'Printer', code:'IT02'}, {id:'cat_it03', name:'Monitor', code:'IT03'},
+    {id:'cat_pm01', name:'AC', code:'PM01'}, {id:'cat_pm02', name:'Proyektor', code:'PM02'}, {id:'cat_ak01', name:'Mouse', code:'AK01'},
+    {id:'cat_fn01', name:'Kursi', code:'FN01', hasSN:false}, {id:'cat_fn02', name:'Meja', code:'FN02', hasSN:false}, {id:'cat_dc01', name:'Dekorasi', code:'DC01', hasSN:false});
+  DB.employees.push(
+    {id:'emp_andi', name:'Andi Pratama', orgId:'org_km', dept:'IT', position:'IT Support'},
+    {id:'emp_sinta', name:'Sinta Maharani', orgId:'org_km', dept:'HRD', position:'HR Manager'},
+    {id:'emp_budi', name:'Budi Santoso', orgId:'org_km', dept:'Finance', position:'Staff Akuntansi'},
+    {id:'emp_rina', name:'Rina Wulandari', orgId:'org_km', dept:'Marketing', position:'Content Creator'},
+    {id:'emp_dewi', name:'Dewi Lestari', orgId:'org_vbi', dept:'Operasional', position:'Kepala Operasional'},
+    {id:'emp_agus', name:'Agus Setiawan', orgId:'org_vbi', dept:'General Affairs', position:'Staff GA'},
+    {id:'emp_yoga', name:'Yoga Saputra', orgId:'org_vbi', dept:'IT', position:'Network Administrator'},
+    {id:'emp_maya', name:'Maya Kusuma', orgId:'org_vbi', dept:'Finance', position:'Supervisor Finance'});
+  DB.vendors.push(
+    {id:'ven_1', name:'PT Mitra Komputindo', contact:'021-5551234 / sales@mitrakomputindo.co.id', address:'Jl. Mangga Dua Raya No. 12, Jakarta Utara'},
+    {id:'ven_2', name:'CV Sinar Teknik Dingin', contact:'0812-3456-7788', address:'Jl. Kebon Jeruk Raya No. 45, Jakarta Barat'},
+    {id:'ven_3', name:'Toko Elektronik Jaya Abadi', contact:'021-7776655', address:'Jl. Glodok Plaza Lt. 2, Jakarta Barat'});
+  DB.locations.push(
+    {id:'loc_1', location:'Kantor Pusat Katamata', room:'Lantai 2 - Ruang Marketing'},
+    {id:'loc_2', location:'Kantor Pusat Katamata', room:'Lantai 1 - Ruang Finance'},
+    {id:'loc_3', location:'Kantor Pusat Katamata', room:'Lantai 3 - Ruang IT'},
+    {id:'loc_4', location:'Gedung VBI Menara Selatan', room:'Lantai 5 - Ruang Rapat Utama'},
+    {id:'loc_5', location:'Gedung VBI Menara Selatan', room:'Lantai 4 - Ruang Operasional'},
+    {id:'loc_6', location:'Gudang Pusat', room:'Rak A - Penyimpanan Aset'});
+  DB.users.push(
+    {id:'usr_sa', name:'Administrator Utama', username:'superadmin', role:'Super Admin', accessDomain:'ALL'},
+    {id:'usr_admin', name:'Andi Pratama', username:'andi.admin', role:'Admin', accessDomain:'IT'},
+    {id:'usr_mgr', name:'Sinta Maharani', username:'sinta.manager', role:'Manager', accessDomain:'ALL'},
+    {id:'usr_spv', name:'Dewi Lestari', username:'dewi.spv', role:'Supervisor', accessDomain:'PM'},
+    {id:'usr_staff', name:'Budi Santoso', username:'budi.staff', role:'Staff', accessDomain:'IT'});
+  ensurePasswords(DB);
+  const P = (o,c,brand,type,serial,spec,ven,date,price,inv,wv,wu,dep,sub,note,cond,qty) => createPurchase({qty:qty||1,orgId:o,catId:c,brand,type,serial,spec,vendorId:ven,buyDate:date,price,invoice:inv,warrantyValue:wv,warrantyUnit:wu,depMonths:dep,submitterId:sub,note,condition:cond||'Bagus'});
+  P('org_km','cat_it01','Lenovo','ThinkPad E14 Gen 4','PF3K8M21','Core i5-1235U, RAM 16GB, SSD 512GB, 14" FHD','ven_1','2025-06-20',16200000,'INV/MK/2025/0612',1,'year',48,'emp_andi','Laptop tim keuangan');
+  P('org_vbi','cat_pm02','Epson','EB-X49','X4CD9001872','XGA 3600 lumen, HDMI, VGA','ven_3','2025-11-12',6400000,'FK-2025-11-0087',2,'year',48,'emp_agus','Proyektor ruang rapat');
+  P('org_km','cat_it01','Asus','Vivobook 14 A1402','R7N0CV24581','Ryzen 5 7520U, RAM 8GB, SSD 512GB, 14" FHD','ven_1','2026-01-15',12500000,'INV/MK/2026/0034',2,'year',48,'emp_andi','Laptop tim marketing');
+  P('org_vbi','cat_pm01','Daikin','FTV25AXV14 (1 PK)','DKN25P0198344','1 PK, R32, Standard, 220V','ven_2','2026-02-05',5850000,'STD/2026/0205',3,'year',60,'emp_agus','AC ruang operasional');
+  P('org_km','cat_it01','HP','ProBook 440 G10','5CD3271QWZ','Core i5-1335U, RAM 16GB, SSD 512GB, 14" FHD','ven_1','2026-03-10',14750000,'INV/MK/2026/0141',1,'year',48,'emp_andi','Cadangan laptop karyawan baru');
+  P('org_vbi','cat_it02','Epson','L3250 EcoTank','X3AB512983','Print/Scan/Copy, WiFi, Tinta Ink Tank','ven_3','2026-04-22',2950000,'FK-2026-04-0311',1,'year',36,'emp_yoga','Printer ruang operasional');
+  P('org_vbi','cat_pm01','LG','Dual Inverter S3-Q12 (1.5 PK)','LG12DI2604771','1.5 PK, Dual Inverter, Low Watt','ven_2','2026-05-18',6300000,'STD/2026/0518',3,'year',60,'emp_agus','AC ruang rapat utama','Rusak Ringan');
+  P('org_km','cat_it03','LG','24MK600M','LG24M6008812','24" IPS Full HD, HDMI + VGA','ven_1','2026-07-02',2100000,'INV/MK/2026/0388',2,'year',36,'emp_andi','Monitor tambahan tim finance');
+  P('org_km','cat_ak01','Logitech','M331 Silent','LGT2608A19442','Wireless Mouse, Silent Click','ven_3','2026-08-11',250000,'FK-2026-08-0102',6,'month',0,'emp_andi','Mouse < Rp 500.000, tidak disusutkan');
+  P('org_km','cat_fn01','Informa','Kursi Kerja Ergonomis EC-200','','','ven_3','2026-08-20',650000,'FK-2026-08-0150',1,'year',36,'emp_andi','Pembelian 50 unit kursi kantor',undefined,50);
+  P('org_vbi','cat_pm01','Panasonic','CS-PN12XKJ (1.5 PK)','PNS12KJ2609001','1.5 PK, Inverter, R32','ven_2','2026-09-10',6200000,'STD/2026/0910',3,'year',60,'emp_agus','Pembelian 5 unit AC',undefined,5);
+  const A = code => DB.assets.find(a => a.code === code);
+  DB.services.push(
+    {id:uid('svc_'), assetId:A('VBI/PM01/002/2026').id, date:'2026-09-22', vendor:'CV Sinar Teknik Dingin', type:'Isi ulang freon & pembersihan evaporator', cost:450000, status:'Dalam Perbaikan', note:'AC kurang dingin, menunggu sparepart', invoice:'INV/SVC/2026/0922', completedDate:''},
+    {id:uid('svc_'), assetId:A('VBI/IT02/001/2026').id, date:'2026-07-15', vendor:'Epson Service Center', type:'Head cleaning & ganti waste ink pad', cost:275000, status:'Selesai', note:'Hasil cetak sudah normal', invoice:'ESC-2026-07-0415', completedDate:'2026-07-17'});
+  createPlacement({assetId:A('VBI/PM01/001/2026').id, date:'2026-02-10', location:'Gedung VBI Menara Selatan', room:'Lantai 4 - Ruang Operasional', note:'AC terpasang di ruang operasional'});
+  createPlacement({assetId:A('VBI/IT02/001/2026').id, date:'2026-04-25', location:'Gedung VBI Menara Selatan', room:'Lantai 4 - Ruang Operasional', note:'Printer bersama tim operasional'});
+  createPlacement({assetId:A('VBI/PM01/002/2026').id, date:'2026-05-20', location:'Gedung VBI Menara Selatan', room:'Lantai 5 - Ruang Rapat Utama', note:'AC ruang rapat utama'});
+  DB.locations.push({id:'loc_7', location:'Kantor Pusat Katamata', room:'Lantai 2 - Ruang Rapat'});
+  createPlacement({assetId:A('KM/FN01/001/2026').id, qtyAllocated:20, date:'2026-08-25', location:'Kantor Pusat Katamata', room:'Lantai 2 - Ruang Rapat', picName:'Sinta Maharani', note:'20 dari 50 kursi untuk ruang rapat'});
+  createPlacement({assetId:A('VBI/PM01/003/2026').id, qtyAllocated:2, date:'2026-09-15', location:'Gedung VBI Menara Selatan', room:'Lantai 4 - Ruang Operasional', picName:'Agus Setiawan', note:'2 dari 5 unit AC'});
+  DB.activity.push({ts:Date.now(), text:'Data contoh dimuat', user:'Sistem'});
+  normalizeDB(DB);
+  return DB;
+}
+const REQ_KEYS = ['orgs','categories','employees','vendors','locations','users','purchases','assets','loans','services'];
+function validDB(d){ return d && typeof d === 'object' && REQ_KEYS.every(k => Array.isArray(d[k])) && d.users.length > 0; }
+function loadDB(){
+  migrateLegacy();
+  try { const raw = localStorage.getItem(STORE_KEY); if(raw){ const d = JSON.parse(raw); if(validDB(d)){ normalizeDB(d); d.session = d.session || {}; if(ensurePasswords(d)) d.session = {userId:null, realUserId:null}; return d; } } } catch(e){}
+  const lg = claimLegacy();
+  if(lg){ normalizeDB(lg); lg.session = lg.session || {}; ensurePasswords(lg); return lg; }
+  return makeSeed();
+}
+function saveLocal(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); regWrite(); usersChangedCheck(); sharedChangedCheck(); }
+  catch(e){ toast('Gagal menyimpan: penyimpanan browser penuh. Lakukan backup dan gunakan gambar berukuran kecil.','error'); }
+}
+function save(){ syncAssetLocations(DB); saveLocal(); schedulePush(); }
+
+/* ---------- UI helper: toast, modal, konfirmasi ---------- */
+function toast(msg, type='ok'){
+  const t = document.createElement('div'); t.className = 'toast '+type;
+  t.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i><span>${esc(msg)}</span>`;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 3400);
+}
+function showModal(title, body, footer='', size='max-w-2xl'){
+  $('#modalRoot').innerHTML = `<div class="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-8" style="background:rgba(17,28,43,.6)"><div class="mx-auto ${size} bg-white rounded-xl shadow-2xl modal-in" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-200"><h3 class="font-bold text-lg text-ink">${title}</h3><button class="text-slate-400 hover:text-slate-700 text-xl px-2" onclick="closeModal()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="p-5">${body}</div>
+    ${footer ? `<div class="px-5 py-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex flex-wrap justify-end gap-2">${footer}</div>` : ''}
+  </div></div>`;
+}
+function closeModal(){ $('#modalRoot').innerHTML = ''; }
+let _confirmCb = null;
+function confirmBox(msg, cb, o={}){
+  _confirmCb = cb;
+  $('#confirmRoot').innerHTML = `<div class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background:rgba(17,28,43,.6)"><div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-5 modal-in">
+    <h3 class="font-bold text-lg text-ink mb-2">${esc(o.title || 'Konfirmasi')}</h3><p class="text-sm text-slate-600 mb-5">${msg}</p>
+    <div class="flex justify-end gap-2"><button class="btn btn-ghost" onclick="closeConfirm()">Batal</button><button class="btn ${o.danger ? 'btn-danger' : 'btn-primary'}" onclick="confirmYes()">${esc(o.ok || 'Ya, lanjutkan')}</button></div></div></div>`;
+}
+function closeConfirm(){ $('#confirmRoot').innerHTML = ''; _confirmCb = null; }
+function confirmYes(){ const cb = _confirmCb; closeConfirm(); if(cb) cb(); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ if($('#confirmRoot').innerHTML) closeConfirm(); else closeModal(); } });
+document.addEventListener('input', e => {
+  if(e.target.classList && e.target.classList.contains('money')){
+    const d = e.target.value.replace(/\D/g,''); e.target.value = d ? Number(d).toLocaleString('id-ID') : '';
+  }
+});
+const fld = (label, inner, cls='', req=false, hint='') => `<div class="${cls}"><label class="label">${label}${req ? ' <span class="text-red-500">*</span>' : ''}</label>${inner}${hint ? `<div class="hint">${hint}</div>` : ''}</div>`;
+const opts = (list, sel, vf, tf, ph) => (ph !== undefined ? `<option value="">${esc(ph)}</option>` : '') + list.map(x => `<option value="${esc(vf(x))}" ${vf(x) === sel ? 'selected' : ''}>${esc(tf(x))}</option>`).join('');
+const tabsHtml = (list, cur, fn) => `<div class="flex gap-1 border-b border-slate-200 mb-4 overflow-x-auto">${list.map(t => `<button class="tab ${t[0] === cur ? 'on' : ''}" onclick="${fn}('${t[0]}')">${t[1]}</button>`).join('')}</div>`;
+const emptyRow = (cols, msg='Belum ada data.') => `<tr><td colspan="${cols}" class="text-center text-slate-400 py-10">${msg}</td></tr>`;
+const tag = c => `<span class="tagcode">${esc(c)}</span>`;
+
+/* ---------- File & gambar ---------- */
+function fileToImageData(file, max, quality, cb){
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height; const s = Math.min(1, max/Math.max(w,h)); w = Math.round(w*s); h = Math.round(h*s);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => toast('File gambar tidak valid.','error');
+    img.src = r.result;
+  };
+  r.readAsDataURL(file);
+}
+function fileObjFrom(file, cb){
+  if(file.type.startsWith('image/')) return fileToImageData(file, 1000, .8, d => cb({name:file.name, mime:'image/jpeg', data:d}));
+  if(file.size <= 700*1024){ const r = new FileReader(); r.onload = () => cb({name:file.name, mime:file.type, data:r.result}); r.readAsDataURL(file); }
+  else { toast('File lebih dari 700 KB: hanya nama file yang disimpan (mockup).'); cb({name:file.name, mime:file.type, data:null}); }
+}
+function dataURLtoBlob(u){
+  const p = u.split(','), mime = (p[0].match(/:(.*?);/)||[])[1] || 'application/octet-stream', bin = atob(p[1]);
+  const arr = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], {type:mime});
+}
+function previewFile(o){
+  if(!o) return;
+  if(!o.data){ toast('Berkas ini hanya tersimpan sebagai nama file: '+o.name); return; }
+  if((o.mime || '').startsWith('image/') || o.data.startsWith('data:image')) showModal(esc(o.name), `<img src="${esc(o.data)}" class="max-w-full mx-auto rounded-lg" alt="">`, '', 'max-w-3xl');
+  else window.open(URL.createObjectURL(dataURLtoBlob(o.data)), '_blank');
+}
+function viewProof(pid){ const p = byId(DB.purchases,pid); previewFile(p && p.proof); }
+function previewImage(aid){ const a = byId(DB.assets,aid); if(a) showModal(esc(itemTitle(a)), `<img src="${esc(imgOf(a))}" class="max-w-full mx-auto rounded-lg" alt="">`, '', 'max-w-2xl'); }
+function download(name, content, mime){
+  const b = new Blob([content], {type:mime}); const a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function toCSV(head, rows){
+  const q = c => { const s = String(c ?? ''); return /[";\r\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  return '\ufeff' + [head, ...rows].map(r => r.map(q).join(';')).join('\r\n');
+}
+
+/* ---------- Barcode / QR / cetak ---------- */
+function drawBarcode(svgId, code, o){
+  try {
+    JsBarcode('#'+svgId, code, Object.assign({format:'CODE128', height:46, displayValue:true, fontSize:12, margin:2, width:1.5}, o || {}));
+    if(o){ // mode responsif: pastikan SVG punya viewBox agar menyusut proporsional di dalam container
+      const el = document.getElementById(svgId);
+      if(el){ const w = parseFloat(el.getAttribute('width')), h = parseFloat(el.getAttribute('height'));
+        if(!el.getAttribute('viewBox') && w && h) el.setAttribute('viewBox', '0 0 '+w+' '+h);
+        el.style.maxWidth = '100%'; el.style.height = 'auto'; el.style.display = 'block'; }
+    }
+  }
+  catch(e){ const el = document.getElementById(svgId); if(el) el.outerHTML = `<div class="mono text-xs">${esc(code)}</div>`; }
+}
+function drawQR(elId, text, size){
+  const el = document.getElementById(elId); if(!el) return; el.innerHTML = '';
+  try { new QRCode(el, {text, width:size, height:size, correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e){ el.textContent = 'QR belum termuat'; }
+}
+const qrText = a => 'KODE: '+a.code+'\nBARANG: '+itemTitle(a)+(assetHasSN(a) ? '\nSN: '+a.serial : '\nQTY: '+a.qty);
+function labelsMarkup(list, pf){
+  return list.map((a,i) => `<div class="label-card"><div class="lc-org">${esc(orgName(a.orgId))}</div><div class="lc-name">${esc(itemTitle(a))}</div><div class="lc-row"><svg id="${pf}bc${i}"></svg><div id="${pf}qr${i}"></div></div></div>`).join('');
+}
+function labelsDraw(list, pf){ list.forEach((a,i) => { drawBarcode(pf+'bc'+i, a.code); drawQR(pf+'qr'+i, qrText(a), 72); }); }
+function showLabels(ids){
+  const list = ids.map(id => byId(DB.assets,id)).filter(Boolean);
+  if(!list.length){ toast('Tidak ada aset untuk dicetak.','error'); return; }
+  TMP.labelIds = ids;
+  showModal('Barcode & QR Code Aset', `<div class="bg-slate-100 rounded-lg p-3 max-h-[60vh] overflow-y-auto">${labelsMarkup(list,'lb_')}</div><div class="hint mt-2">Barcode CODE128 dan QR Code berisi kode, nama barang, dan serial number.</div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Tutup</button><button class="btn btn-primary" onclick="printLabels()"><i class="fa-solid fa-print"></i>Cetak label</button>`, 'max-w-3xl');
+  labelsDraw(list,'lb_');
+}
+function printLabels(){
+  const list = (TMP.labelIds || []).map(id => byId(DB.assets,id)).filter(Boolean);
+  $('#printArea').innerHTML = '<div>'+labelsMarkup(list,'pl_')+'</div>';
+  labelsDraw(list,'pl_'); setTimeout(() => window.print(), 250);
+}
+function printHTML(html){ $('#printArea').innerHTML = html; setTimeout(() => window.print(), 200); }
+
+/* ---------- Router & chrome ---------- */
+const NAV = [
+  {g:'Utama', items:[['dashboard','fa-chart-pie','Dashboard']]},
+  {g:'Transaksi', items:[['purchase','fa-cart-shopping','Pembelian'],['stock','fa-boxes-stacked','Stok Aset'],['placement','fa-building-user','Lokasi Aset'],['service','fa-screwdriver-wrench','Service']]},
+  {g:'Data', items:[['master','fa-database','Master Data'],['reports','fa-file-lines','Laporan']]},
+  {g:'Sistem', items:[['users','fa-users-gear','User & Hak Akses'],['backup','fa-cloud-arrow-down','Backup & Data']]}
+];
+const TITLES = {dashboard:'Dashboard', purchase:'Pembelian Aset', stock:'Stok Aset', placement:'Lokasi Aset', service:'Service & Maintenance', master:'Master Data', reports:'Laporan', users:'User & Hak Akses', backup:'Backup, Export & Import'};
+function toggleSidebar(open){
+  const s = $('#sidebar'), o = $('#overlay');
+  s.classList.toggle('-translate-x-full', !open); o.classList.toggle('hidden', !open);
+}
+function navigate(v){ UI.view = v; toggleSidebar(false); const c = $('#content'); if(c) c.scrollTop = 0; render(); }
+function setTab(g,k){ UI.tab[g] = k; render(); }
+function setQ(k,v){ UI.q[k] = v; render(); }
+function setF(k,v){ UI.f[k] = v; render(); }
+function renderChrome(){
+  const svc = DB.services.filter(s => s.status === 'Dalam Perbaikan').length;
+  const badge = {service:svc};
+  $('#navRoot').innerHTML = `
+    <div class="px-5 pt-6 pb-5"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg flex items-center justify-center text-white" style="background:var(--tag)"><i class="fa-solid fa-barcode"></i></div>
+      <div><div class="display text-white font-extrabold text-lg leading-tight">Katamata Group</div><div class="text-[11px] text-slate-400 mt-1">System Asset Management</div></div></div></div>
+    <nav class="flex-1 overflow-y-auto px-3 pb-4 space-y-4">
+    ${NAV.map(g => `<div><div class="px-3 pb-1 text-[11px] font-semibold text-slate-500">${g.g}</div><div class="space-y-0.5">${g.items.filter(i => i[0] !== 'users' || isSA()).map(i =>
+      `<button class="nav ${UI.view === i[0] ? 'active' : ''}" onclick="navigate('${i[0]}')"><i class="fa-solid ${i[1]}"></i><span class="flex-1">${i[2]}</span>${badge[i[0]] ? `<span class="badge" style="background:rgba(255,255,255,.14);color:#fff">${badge[i[0]]}</span>` : ''}</button>`).join('')}</div></div>`).join('')}
+    </nav>
+    <button id="syncBadge" class="px-5 py-4 border-t border-white/10 text-[11px] text-slate-400 text-left w-full hover:text-white" onclick="syncBadgeClick()"></button>`;
+  updateSyncBadge(true);
+  const u = currentUser(), real = realUser(), sim = real.id !== u.id;
+  const roleCls = u.role === 'Super Admin' ? 'b-red' : u.role === 'Admin' ? 'b-blue' : 'b-gray';
+  $('#hdrRoot').innerHTML = `<h1 class="text-xl font-bold text-ink truncate">${TITLES[UI.view]}</h1>
+    <div class="flex items-center gap-2 shrink-0">
+      ${real.role === 'Super Admin' ? `<span class="hidden md:inline text-xs text-slate-500">Lihat sebagai</span><select class="input input-sm" style="max-width:180px" onchange="switchUser(this.value)" aria-label="Lihat sebagai user">${opts(DB.users, u.id, x => x.id, x => x.name+' — '+x.role)}</select>` : ''}
+      ${sim ? '<span class="badge b-amber">Simulasi</span>' : ''}
+      <span class="hidden sm:inline text-sm font-semibold text-ink truncate" style="max-width:150px">${esc(u.name)}</span><span class="badge ${roleCls}">${esc(u.role)}</span>
+      ${!sim ? `<button class="btn btn-ghost btn-sm" onclick="openPasswordForm()" title="Ubah password" aria-label="Ubah password"><i class="fa-solid fa-key"></i></button>` : ''}
+      ${domainOf(real) === 'ALL' ? `<a href="index.html" class="btn btn-ghost btn-sm" style="text-decoration:none" title="Switch App / Kembali ke Portal"><i class="fa-solid fa-table-cells-large"></i><span class="hidden sm:inline">Switch App</span></a>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="logout()" title="Keluar"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline">Keluar</span></button></div>`;
+}
+function switchUser(id){
+  if(realUser().role !== 'Super Admin'){ toast('Hanya Super Admin yang dapat mensimulasikan user lain.','error'); return; }
+  if(!byId(DB.users,id)) return;
+  DB.session.realUserId = realUser().id; DB.session.userId = id; save();
+  if(UI.view === 'users' && !isSA()) UI.view = 'dashboard';
+  render(); toast('Sekarang melihat sebagai '+currentUser().name+' ('+currentUser().role+')');
+}
+const VIEWS = {};
+function render(){
+  if(!enforceAccess()) return;
+  if(!currentUser()){ $('#app').style.display = 'none'; $('#navRoot').innerHTML = ''; $('#content').innerHTML = ''; goPortal(); return; }
+  $('#app').style.display = ''; $('#loginRoot').innerHTML = '';
+  const ae = document.activeElement, aid = ae && ae.id && ae.id.startsWith('q_') ? ae.id : null, pos = aid ? ae.selectionStart : 0;
+  if(UI.view === 'users' && !isSA()) UI.view = 'dashboard';
+  renderChrome();
+  const banner = can() ? '' : `<div class="mb-4 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 px-4 py-2.5 text-sm flex items-center gap-2"><i class="fa-solid fa-eye"></i>Mode lihat saja: role <b>${esc(currentUser().role)}</b> dapat melihat data dan mencetak laporan, tetapi tidak dapat mengubah data.</div>`;
+  $('#content').innerHTML = banner + VIEWS[UI.view]();
+  if(aid){ const el = document.getElementById(aid); if(el){ el.focus(); try { el.setSelectionRange(pos,pos); } catch(e){} } }
+}
+
+/* =====================================================================
+   DASHBOARD
+   ===================================================================== */
+const statCard = (icon, color, label, value, sub) => `<div class="card p-4 flex gap-3.5 items-start"><div class="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0" style="background:${color}1f;color:${color}"><i class="fa-solid ${icon}"></i></div><div class="min-w-0"><div class="text-xs font-medium text-slate-500">${label}</div><div class="display text-2xl font-bold text-ink mt-0.5 truncate">${value}</div><div class="text-xs text-slate-500 mt-0.5">${sub || ''}</div></div></div>`;
+const barRow = (label, v, max, text, color) => `<div class="mb-3"><div class="flex justify-between text-xs mb-1 gap-2"><span class="font-semibold truncate">${esc(label)}</span><span class="text-slate-500 shrink-0">${text}</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full" style="width:${max ? Math.max(3, v/max*100) : 0}%;background:${color}"></div></div></div>`;
+VIEWS.dashboard = function(){
+  const A = DB.assets; let price = 0, accum = 0, book = 0;
+  A.forEach(a => { const d = depInfo(a); price += totalPrice(a); accum += d.accum; book += d.book; });
+  const svc = A.filter(a => inService(a.id)).length, placedN = A.reduce((s,a) => s + allocQty(a.id), 0), totalQ = A.reduce((s,a) => s + (+a.qty || 1), 0), stockQ = A.reduce((s,a) => s + sisaQty(a), 0);
+  const pct = price ? Math.round(accum/price*100) : 0;
+  const expiring = A.map(a => ({a, w:warrantyInfo(a)})).filter(x => x.w.status === 'active' && x.w.days <= 120).sort((x,y) => x.w.days - y.w.days).slice(0,5);
+  const orgRows = DB.orgs.map(o => ({o, list:A.filter(a => a.orgId === o.id)})).map(x => ({...x, val:x.list.reduce((s,a) => s + totalPrice(a), 0)}));
+  const maxOrg = Math.max(0, ...orgRows.map(x => x.val));
+  const catRows = DB.categories.map(c => ({c, n:A.filter(a => a.catId === c.id).reduce((s,a) => s + (+a.qty || 1), 0)})).filter(x => x.n).sort((a,b) => b.n - a.n);
+  const maxCat = Math.max(0, ...catRows.map(x => x.n));
+  return `
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+    ${statCard('fa-sack-dollar','#163a6b','Total nilai aset (perolehan)', idr(price), 'Nilai buku saat ini '+idr(book))}
+    ${statCard('fa-arrow-trend-down','#f2600c','Total akumulasi penyusutan', idr(accum), pct+'% dari nilai perolehan')}
+    ${statCard('fa-building-user','#0f6b5c','Dialokasikan ke ruangan', placedN+' unit', DB.placements.filter(p => p.status === 'active').length+' alokasi aktif')}
+    ${statCard('fa-screwdriver-wrench','#b4790a','Aset dalam service', svc+' unit', 'Total '+DB.services.length+' catatan service')}
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+    <div class="card p-5 lg:col-span-1"><h3 class="font-bold text-ink mb-4">Nilai buku dan penyusutan</h3>
+      <div class="flex items-center gap-5"><div class="donut" style="--p:${pct}"><div class="donut-c"><div class="display text-2xl font-bold text-ink">${pct}%</div><div class="text-[11px] text-slate-500">tersusutkan</div></div></div>
+      <div class="text-sm space-y-2 min-w-0"><div><span class="inline-block w-2.5 h-2.5 rounded-sm mr-1.5" style="background:var(--brand)"></span>Nilai buku<div class="font-bold text-ink">${idr(book)}</div></div>
+      <div><span class="inline-block w-2.5 h-2.5 rounded-sm mr-1.5" style="background:var(--tag)"></span>Akumulasi<div class="font-bold text-ink">${idr(accum)}</div></div></div></div>
+      <div class="grid grid-cols-4 gap-2 mt-5 text-center"><div class="rounded-lg bg-slate-50 py-2"><div class="font-bold text-ink">${totalQ}</div><div class="text-[11px] text-slate-500">Total unit</div></div>
+      <div class="rounded-lg bg-slate-50 py-2"><div class="font-bold text-ink">${stockQ}</div><div class="text-[11px] text-slate-500">Sisa di stok</div></div>
+      <div class="rounded-lg bg-slate-50 py-2"><div class="font-bold text-ink">${placedN}</div><div class="text-[11px] text-slate-500">Di ruangan</div></div>
+      <div class="rounded-lg bg-slate-50 py-2"><div class="font-bold text-ink">${A.filter(a => warrantyInfo(a).status === 'active').length}</div><div class="text-[11px] text-slate-500">Garansi aktif</div></div></div></div>
+    <div class="card p-5"><h3 class="font-bold text-ink mb-4">Nilai perolehan per organisasi</h3>
+      ${orgRows.map(x => barRow(x.o.name+' ('+x.o.code+')', x.val, maxOrg, idr(x.val)+' · '+x.list.reduce((s,a) => s + (+a.qty || 1), 0)+' unit', 'var(--brand)')).join('') || '<div class="text-slate-400 text-sm">Belum ada data.</div>'}
+      <h3 class="font-bold text-ink mt-5 mb-3">Jumlah aset per kategori</h3>
+      ${catRows.map(x => barRow(x.c.name, x.n, maxCat, x.n+' unit', 'var(--tag)')).join('') || '<div class="text-slate-400 text-sm">Belum ada data.</div>'}</div>
+    <div class="card p-5"><h3 class="font-bold text-ink mb-3">Garansi segera berakhir</h3>
+      ${expiring.length ? expiring.map(x => `<div class="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 gap-2"><div class="min-w-0">${tag(x.a.code)}<div class="text-xs text-slate-500 mt-1 truncate">${esc(itemTitle(x.a))}</div></div><span class="badge ${x.w.days <= 30 ? 'b-red' : 'b-amber'}">${x.w.days} hari</span></div>`).join('') : '<div class="text-sm text-slate-400 py-4">Tidak ada garansi yang berakhir dalam 120 hari ke depan.</div>'}</div>
+  </div>
+  <div class="card p-5"><h3 class="font-bold text-ink mb-3">Aktivitas terakhir</h3>
+    ${DB.activity.slice(0,8).map(x => `<div class="flex gap-3 py-1.5 text-sm border-b border-slate-100 last:border-0"><span class="text-xs text-slate-400 w-36 shrink-0">${fmtDT(x.ts)}</span><span class="flex-1">${esc(x.text)}</span><span class="text-xs text-slate-500 hidden sm:inline">${esc(x.user)}</span></div>`).join('') || '<div class="text-sm text-slate-400">Belum ada aktivitas.</div>'}</div>`;
+};
+
+/* =====================================================================
+   PEMBELIAN
+   ===================================================================== */
+VIEWS.purchase = function(){
+  const q = UI.q.pur || '', fo = UI.f.purOrg || '', fy = UI.f.purYear || '';
+  const years = [...new Set(DB.assets.map(a => parseDate(a.buyDate).getFullYear()))].sort((a,b) => b - a);
+  const list = DB.purchases.map(p => ({p, a:byId(DB.assets,p.assetId)})).filter(x => x.a)
+    .filter(x => (!fo || x.a.orgId === fo) && (!fy || String(parseDate(x.a.buyDate).getFullYear()) === fy) && match(q, x.a.code, x.a.brand, x.a.type, x.a.serial, x.a.invoice, vendorName(x.a.vendorId), catName(x.a)))
+    .sort((x,y) => y.a.buyDate.localeCompare(x.a.buyDate) || y.a.code.localeCompare(x.a.code));
+  let tp = 0, tb = 0; list.forEach(x => { tp += totalPrice(x.a); tb += depInfo(x.a).book; });
+  const rows = list.map(({p,a}) => { const d = depInfo(a); return `<tr>
+    <td>${tag(a.code)}</td><td><div class="font-semibold">${esc(catName(a))}</div><div class="text-xs text-slate-500">${esc(a.brand)} ${esc(a.type)}</div></td>
+    <td>${esc(orgName(a.orgId))}</td><td>${esc(vendorName(a.vendorId))}</td><td class="whitespace-nowrap">${fmtD(a.buyDate)}</td>
+    <td class="r whitespace-nowrap">${num(a.qty)}</td><td class="r whitespace-nowrap">${idr(a.price)}</td><td class="r whitespace-nowrap font-semibold">${idr(totalPrice(a))}</td>
+    <td class="whitespace-nowrap">${d.dep ? d.period+' / '+d.life+' bln' : '<span class="text-slate-400">Tidak disusutkan</span>'}</td>
+    <td class="r whitespace-nowrap">${idr(d.accum)}</td><td class="r whitespace-nowrap font-semibold">${idr(d.book)}</td>
+    <td class="mono text-xs">${esc(a.invoice)}</td>
+    <td class="whitespace-nowrap"><button class="btn btn-ghost btn-sm" onclick="showAsset('${a.id}')" title="Detail"><i class="fa-solid fa-eye"></i></button>
+      ${can() ? `<button class="btn btn-ghost btn-sm" onclick="openPurchaseForm('${p.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>${delBtn('deletePurchase',p.id)}` : ''}</td></tr>`; }).join('');
+  return `<div class="flex flex-wrap items-center gap-2 mb-4">
+    <input id="q_pur" class="input" style="max-width:280px" placeholder="Cari kode, brand, serial, faktur…" value="${esc(q)}" oninput="setQ('pur',this.value)">
+    <select class="input" style="max-width:200px" onchange="setF('purOrg',this.value)">${opts(DB.orgs, fo, x => x.id, x => x.name, 'Semua organisasi')}</select>
+    <select class="input" style="max-width:140px" onchange="setF('purYear',this.value)">${opts(years, fy, x => String(x), x => String(x), 'Semua tahun')}</select>
+    <div class="flex-1"></div>${can() ? `<button class="btn btn-primary" onclick="openPurchaseForm()"><i class="fa-solid fa-plus"></i>Input pembelian</button>` : ''}</div>
+  <div class="card overflow-hidden"><div class="px-4 py-2.5 text-sm text-slate-600 border-b border-slate-200 flex flex-wrap gap-x-6">
+    <span><b>${list.length}</b> pembelian</span><span>Total harga beli <b>${idr(tp)}</b></span><span>Total nilai buku <b>${idr(tb)}</b></span></div>
+    <div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Kode barang</th><th>Barang</th><th>Organisasi</th><th>Vendor</th><th>Tgl beli</th><th class="r">Qty</th><th class="r">Harga unit</th><th class="r">Total perolehan</th><th>Periode susut</th><th class="r">Akumulasi</th><th class="r">Nilai buku</th><th>No. faktur</th><th>Aksi</th></tr></thead>
+    <tbody>${rows || emptyRow(13,'Belum ada data pembelian.')}</tbody></table></div></div>`;
+};
+function openPurchaseForm(id){
+  if(!guard()) return;
+  if(!DB.orgs.length || !DB.categories.length || !DB.vendors.length || !DB.employees.length){ toast('Lengkapi Master Data (organisasi, kategori, vendor, karyawan) terlebih dahulu.','error'); return; }
+  const p = id ? byId(DB.purchases,id) : null, a = p ? byId(DB.assets,p.assetId) : null;
+  EDIT_PUR = p ? p.id : null; TMP.proof = p ? (p.proof || null) : null;
+  const v = a || {qty:1,orgId:'',catId:'',brand:'',type:'',serial:'',spec:'',image:'',vendorId:'',buyDate:todayStr(),price:'',invoice:'',warrantyValue:1,warrantyUnit:'year',depMonths:48,note:'',condition:'Bagus'};
+  const emp = p ? byId(DB.employees,p.submitterId) : null;
+  const dis = p ? 'disabled' : '';
+  const body = `
+  <div class="rounded-lg p-3 mb-4 flex flex-wrap items-center gap-x-6 gap-y-2" style="background:#f6f8fa;border:1px solid var(--line)">
+    <div><div class="text-xs text-slate-500">Kode barang otomatis</div><div class="mono font-semibold text-lg text-ink" id="pv_code">—</div></div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1 text-sm flex-1"><div><div class="text-xs text-slate-500">Periode</div><b id="pv_period">0</b></div><div><div class="text-xs text-slate-500">Susut / bulan</div><b id="pv_monthly">Rp 0</b></div><div><div class="text-xs text-slate-500">Akumulasi</div><b id="pv_accum">Rp 0</b></div><div><div class="text-xs text-slate-500">Nilai buku</div><b id="pv_book">Rp 0</b></div></div>
+    <div id="pv_warr"></div></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+    ${fld('Organisasi', `<select id="f_org" class="input" ${dis} onchange="pfPreview()">${opts(DB.orgs, v.orgId, x => x.id, x => x.name+' ('+x.code+')', 'Pilih organisasi…')}</select>`, '', true)}
+    ${fld('Kategori / kode nama barang', `<select id="f_cat" class="input" ${dis} onchange="pfCat()">${opts(DB.categories, v.catId, x => x.id, x => x.name+' ('+x.code+')', 'Pilih kategori…')}</select>`, '', true)}
+    ${fld('Brand', `<input id="f_brand" class="input" list="dl_brand" value="${esc(v.brand)}" placeholder="Asus, HP, Daikin, LG…"><datalist id="dl_brand">${['Asus','HP','Lenovo','Dell','Acer','Apple','Daikin','LG','Samsung','Panasonic','Epson','Canon','Logitech'].map(b => `<option value="${b}">`).join('')}</datalist>`, '', true)}
+    ${fld('Tipe barang', `<input id="f_type" class="input" value="${esc(v.type)}" placeholder="Contoh: Vivobook 14 A1402">`, '', true)}
+    <div id="wrap_sn">${fld('Serial number', `<input id="f_serial" class="input mono" value="${esc(v.serial)}">`, '', true, 'Untuk lebih dari 1 unit, pisahkan SN dengan koma.')}</div>
+    ${fld('Vendor / supplier', `<select id="f_vendor" class="input">${opts(DB.vendors, v.vendorId, x => x.id, x => x.name, 'Pilih vendor…')}</select>`, '', true)}
+    <div id="wrap_spec" class="sm:col-span-2">${fld('Spesifikasi', `<textarea id="f_spec" class="input" rows="2">${esc(v.spec)}</textarea>`, '')}</div>
+    <div class="sm:col-span-2"><label class="label">Gambar barang</label>
+      <div class="flex flex-wrap items-start gap-3"><img id="f_prev" src="${esc(v.image)}" class="w-20 h-20 rounded-lg object-cover border border-slate-200 ${v.image ? '' : 'hidden'}" alt="">
+      <div class="flex-1 min-w-[220px] space-y-2"><input type="hidden" id="f_img" value="${esc(v.image)}">
+        <input type="file" accept="image/*" class="input" onchange="pickAssetImage(this)">
+        <input id="f_imgurl" class="input" placeholder="atau tempel URL gambar (https://…)" value="${v.image && !v.image.startsWith('data:') ? esc(v.image) : ''}" oninput="urlAssetImage(this.value)">
+        <button type="button" class="text-xs text-red-600 underline" onclick="clearAssetImage()">Hapus gambar</button></div></div></div>
+    ${fld('Tanggal beli', `<input id="f_date" type="date" class="input" value="${esc(v.buyDate)}" oninput="pfPreview()">`, '', true)}
+    ${fld('Harga beli (IDR)', `<input id="f_price" class="input money" inputmode="numeric" value="${v.price ? num(v.price) : ''}" placeholder="0" oninput="pfPreview()">`, '', true, 'Harga di bawah Rp 500.000 tidak disusutkan.')}
+    ${fld('Qty beli (unit)', `<input id="f_qty" type="number" min="1" class="input" value="${esc(v.qty || 1)}" oninput="pfPreview()">`, '', true, '<span id="qty_hint"></span>')}
+    ${fld('Nomor faktur', `<input id="f_invoice" class="input mono" value="${esc(v.invoice)}">`, '', true)}
+    ${fld('Garansi', `<div class="flex gap-2"><input id="f_wval" type="number" min="0" class="input" value="${v.warrantyValue}" oninput="pfPreview()"><select id="f_wunit" class="input" style="max-width:120px" onchange="pfPreview()"><option value="year" ${v.warrantyUnit === 'year' ? 'selected' : ''}>Tahun</option><option value="month" ${v.warrantyUnit === 'month' ? 'selected' : ''}>Bulan</option></select></div>`)}
+    ${fld('Masa penyusutan (bulan)', `<input id="f_dep" type="number" min="0" class="input" value="${v.depMonths}" oninput="pfPreview()">`, '', false, '<span id="dep_hint"></span>')}
+    ${fld('Kondisi awal', `<select id="f_cond" class="input">${opts(CONDITIONS, v.condition, x => x, x => x)}</select>`)}
+    ${fld('Karyawan pengaju', `<select id="f_emp" class="input" onchange="pfEmp()">${opts(DB.employees, p ? p.submitterId : '', x => x.id, x => x.name+' — '+orgName(x.orgId), 'Pilih karyawan…')}</select>`, '', true)}
+    ${fld('Departemen pengaju', `<input id="f_dept" class="input" readonly value="${esc(emp ? emp.dept : '')}">`)}
+    ${fld('Posisi pengaju', `<input id="f_pos" class="input" readonly value="${esc(emp ? emp.position : '')}">`)}
+    ${fld('Bukti pembelian', `<input type="file" accept="image/*,.pdf" class="input" onchange="pickProof(this)"><div class="hint" id="proof_name">${TMP.proof ? 'Tersimpan: '+esc(TMP.proof.name) : 'Gambar atau PDF (maks. 700 KB disimpan penuh, di atasnya hanya nama file).'}</div>`)}
+    ${fld('Keterangan', `<textarea id="f_note" class="input" rows="2">${esc(v.note)}</textarea>`, 'sm:col-span-2')}
+  </div>`;
+  showModal(p ? 'Edit pembelian' : 'Input pembelian baru', body,
+    `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="savePurchase()"><i class="fa-solid fa-floppy-disk"></i>${p ? 'Simpan perubahan' : 'Simpan & masukkan ke stok'}</button>`, 'max-w-4xl');
+  pfCat();
+}
+function pfCat(){
+  const sn = !val('f_cat') || catHasSN(val('f_cat'));
+  $('#wrap_sn').classList.toggle('hidden', !sn); $('#wrap_spec').classList.toggle('hidden', !sn);
+  pfPreview();
+}
+function pfEmp(){ const e = byId(DB.employees, val('f_emp')); $('#f_dept').value = e ? e.dept : ''; $('#f_pos').value = e ? e.position : ''; }
+function pfPreview(){
+  const orgId = val('f_org'), catId = val('f_cat'), date = val('f_date'), price = moneyVal('f_price');
+  let code = '—';
+  if(EDIT_PUR){ code = byId(DB.purchases, EDIT_PUR).code; }
+  else if(orgId && catId && date){ code = genCode(orgId, catId, parseDate(date).getFullYear()); }
+  $('#pv_code').textContent = code;
+  const dep = $('#f_dep');
+  if(price < MIN_DEP_PRICE){ dep.value = 0; dep.disabled = true; $('#dep_hint').textContent = 'Harga < Rp 500.000: masa penyusutan 0 bulan (tidak disusutkan).'; }
+  else { if(dep.disabled){ dep.disabled = false; if(!+dep.value) dep.value = 48; } $('#dep_hint').textContent = 'Periode mulai 1 saat input, bertambah 1 tiap bulan sampai masa penyusutan.'; }
+  const qty = Math.max(1, parseInt(val('f_qty'), 10) || 1);
+  const tmp = {price, qty, buyDate:date || todayStr(), depMonths:+dep.value || 0, warrantyValue:+val('f_wval') || 0, warrantyUnit:val('f_wunit')};
+  const d = depInfo(tmp), w = warrantyInfo(tmp);
+  $('#pv_period').textContent = d.dep ? d.period+' / '+d.life+' bln' : '0'; $('#pv_monthly').textContent = idr(d.monthly);
+  $('#pv_accum').textContent = idr(d.accum); $('#pv_book').textContent = idr(d.book);
+  const qh = $('#qty_hint'); if(qh) qh.innerHTML = 'Total perolehan = '+idr(price)+' × '+qty+' = <b>'+idr(price * qty)+'</b>';
+  $('#pv_warr').innerHTML = warrantyBadge(tmp) + (w.end ? `<div class="text-xs text-slate-500 mt-1">s.d. ${fmtD(w.end)}</div>` : '');
+}
+function pickAssetImage(input){ const f = input.files[0]; if(!f) return; fileToImageData(f, 640, .78, d => { $('#f_img').value = d; $('#f_imgurl').value = ''; const p = $('#f_prev'); p.src = d; p.classList.remove('hidden'); }); }
+function urlAssetImage(v){ v = v.trim(); $('#f_img').value = v; const p = $('#f_prev'); if(v){ p.src = v; p.classList.remove('hidden'); } else p.classList.add('hidden'); }
+function clearAssetImage(){ $('#f_img').value = ''; $('#f_imgurl').value = ''; $('#f_prev').classList.add('hidden'); }
+function pickProof(input){ const f = input.files[0]; if(!f) return; fileObjFrom(f, o => { TMP.proof = o; $('#proof_name').textContent = 'Terpilih: '+o.name; }); }
+function savePurchase(){
+  const d = {orgId:val('f_org'), catId:val('f_cat'), brand:val('f_brand').trim(), type:val('f_type').trim(), serial:val('f_serial').trim(), spec:val('f_spec').trim(), image:val('f_img'),
+    vendorId:val('f_vendor'), buyDate:val('f_date'), price:moneyVal('f_price'), invoice:val('f_invoice').trim(), warrantyValue:+val('f_wval') || 0, warrantyUnit:val('f_wunit'),
+    depMonths:+val('f_dep') || 0, qty:parseInt(val('f_qty'), 10) || 0, condition:val('f_cond'), submitterId:val('f_emp'), note:val('f_note').trim(), proof:TMP.proof || null};
+  const miss = [['orgId','Organisasi'],['catId','Kategori'],['brand','Brand'],['type','Tipe barang'],['vendorId','Vendor'],['buyDate','Tanggal beli'],['invoice','Nomor faktur'],['submitterId','Karyawan pengaju']].find(x => !d[x[0]]);
+  if(miss){ toast(miss[1]+' wajib diisi.','error'); return; }
+  const sn = catHasSN(d.catId);
+  if(sn && !d.serial){ toast('Serial number wajib diisi untuk kategori ber-SN.','error'); return; }
+  if(d.qty < 1){ toast('Qty beli minimal 1 unit.','error'); return; }
+  if(d.price <= 0){ toast('Harga beli harus lebih dari 0.','error'); return; }
+  if(d.price >= MIN_DEP_PRICE && d.depMonths < 1){ toast('Masa penyusutan minimal 1 bulan untuk harga ≥ Rp 500.000.','error'); return; }
+  if(d.price < MIN_DEP_PRICE) d.depMonths = 0;
+  const p = EDIT_PUR ? byId(DB.purchases, EDIT_PUR) : null;
+  if(sn){ const toks = s => String(s || '').split(/[,;\n]/).map(x => x.trim().toLowerCase()).filter(Boolean), mine = toks(d.serial);
+    if(DB.assets.some(a => assetHasSN(a) && (!p || a.id !== p.assetId) && toks(a.serial).some(t => mine.includes(t)))){ toast('Serial number sudah terdaftar pada aset lain.','error'); return; } }
+  if(p){
+    const a = byId(DB.assets, p.assetId), emp = byId(DB.employees, d.submitterId);
+    const used = allocQty(a.id); if(d.qty < used){ toast('Qty beli tidak boleh kurang dari qty yang sudah dialokasikan ('+used+' unit).','error'); return; }
+    Object.assign(a, {qty:d.qty, brand:d.brand, type:d.type, serial:sn ? d.serial : '', spec:sn ? d.spec : '', image:d.image, vendorId:d.vendorId, buyDate:d.buyDate, price:d.price, invoice:d.invoice, warrantyValue:d.warrantyValue, warrantyUnit:d.warrantyUnit, depMonths:d.depMonths, condition:d.condition, note:d.note});
+    Object.assign(p, {submitterId:d.submitterId, dept:emp.dept, position:emp.position, proof:d.proof});
+    log('Mengubah pembelian '+a.code); toast('Pembelian '+a.code+' diperbarui.');
+  } else {
+    const a = createPurchase(d);
+    log('Pembelian baru '+a.code+' ('+itemTitle(a)+') masuk ke stok ('+a.qty+' unit)'); toast('Tersimpan: '+a.code+' — '+a.qty+' unit otomatis masuk ke Stok Aset.');
+  }
+  EDIT_PUR = null; save(); closeModal(); render();
+}
+function deletePurchase(id){
+  if(!guardDel()) return;
+  const p = byId(DB.purchases,id), a = byId(DB.assets,p.assetId);
+  if(allocQty(a.id) > 0){ toast('Barang masih dialokasikan di ruangan. Tarik barang ke stok terlebih dahulu.','error'); return; }
+  confirmBox(`Hapus pembelian <b>${esc(a.code)}</b>? Aset beserta riwayat service, dan lokasi aset tetap terkait akan ikut terhapus.`, () => {
+    DB.assets = DB.assets.filter(x => x.id !== a.id); DB.purchases = DB.purchases.filter(x => x.id !== id);
+    DB.services = DB.services.filter(s => s.assetId !== a.id); DB.placements = DB.placements.filter(x => x.assetId !== a.id);
+    log('Menghapus pembelian '+a.code); save(); render(); toast('Pembelian dihapus.');
+  }, {danger:true, ok:'Hapus', title:'Hapus pembelian'});
+}
+
+/* ---------- Detail aset ---------- */
+function showAsset(id){
+  const a = byId(DB.assets,id); if(!a) return;
+  const d = depInfo(a), w = warrantyInfo(a), pur = byId(DB.purchases, a.purchaseId) || {};
+  const svcs = DB.services.filter(x => x.assetId === a.id).sort((x,y) => y.date.localeCompare(x.date));
+  const body = `<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="min-w-0"><img src="${esc(imgOf(a))}" class="w-full aspect-square object-cover rounded-lg border border-slate-200" alt=""><div class="w-full overflow-hidden flex justify-center p-2 bg-white border border-slate-200 rounded-lg mt-3"><svg id="dt_bc" style="max-width:100%;height:auto;display:block"></svg></div></div>
+    <div class="md:col-span-2 min-w-0"><div class="mb-3">${tag(a.code)}<div class="display text-xl font-bold text-ink mt-1.5">${esc(itemTitle(a))}</div></div>
+    <dl class="dl"><dt>Organisasi</dt><dd>${esc(orgName(a.orgId))}</dd>${assetHasSN(a) ? `<dt>Serial number</dt><dd class="mono">${esc(a.serial)}</dd><dt>Spesifikasi</dt><dd>${esc(a.spec) || '-'}</dd>` : ''}<dt>Qty</dt><dd>Total ${a.qty} · Dialokasikan ${allocQty(a.id)} · Sisa di stok <b>${sisaQty(a)}</b></dd>
+    <dt>Vendor</dt><dd>${esc(vendorName(a.vendorId))}</dd><dt>Tanggal beli</dt><dd>${fmtD(a.buyDate)}</dd><dt>Nomor faktur</dt><dd class="mono">${esc(a.invoice)}</dd>
+    <dt>Harga unit</dt><dd>${idr(a.price)}</dd><dt>Total perolehan</dt><dd>${idr(totalPrice(a))}</dd><dt>Garansi</dt><dd>${warrantyText(a)} ${warrantyBadge(a)}${w.end ? '<div class="text-xs text-slate-500">berakhir '+fmtD(w.end)+'</div>' : ''}</dd>
+    <dt>Masa penyusutan</dt><dd>${d.dep ? d.life+' bulan' : '0 bulan (tidak disusutkan)'}</dd><dt>Periode</dt><dd>${d.period}</dd><dt>Akumulasi susut</dt><dd>${idr(d.accum)}</dd><dt>Nilai buku</dt><dd class="font-bold">${idr(d.book)}</dd>
+    <dt>Kondisi</dt><dd>${condBadge(a.condition)}</dd><dt>Maintenance</dt><dd>${svcBadge(a.id)}</dd><dt>Posisi unit</dt><dd>${placementsText(a)}</dd>
+    <dt>Pengaju</dt><dd>${esc(empName(pur.submitterId))} <span class="text-slate-500">(${esc(pur.dept || '-')} / ${esc(pur.position || '-')})</span></dd>
+    <dt>Bukti pembelian</dt><dd>${pur.proof ? `<button class="text-brand underline" onclick="viewProof('${pur.id}')">${esc(pur.proof.name)}</button>` : '-'}</dd><dt>Keterangan</dt><dd>${esc(a.note) || '-'}</dd></dl></div></div>
+    ${plHistoryHTML(a.id)}
+    <h4 class="font-bold text-ink mt-5 mb-2">Riwayat service</h4>
+    ${svcs.length ? `<div class="overflow-x-auto border border-slate-200 rounded-lg"><table class="tbl"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Vendor</th><th>No. Invoice</th><th class="r">Biaya</th><th>Status</th></tr></thead><tbody>${svcs.map(x => `<tr><td>${fmtD(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.vendor)}</td><td class="mono text-xs whitespace-nowrap">${esc(x.invoice) || '-'}</td><td class="r">${idr(x.cost)}</td><td>${x.status === 'Selesai' ? '<span class="badge b-green">Selesai</span>' : '<span class="badge b-amber">Dalam Perbaikan</span>'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="text-sm text-slate-400">Belum ada catatan service.</div>'}`;
+  showModal('Detail aset', body, `<button class="btn btn-ghost" onclick="closeModal()">Tutup</button><button class="btn btn-primary" onclick="showLabels(['${a.id}'])"><i class="fa-solid fa-qrcode"></i>Cetak barcode / QR</button>`, 'max-w-4xl');
+  drawBarcode('dt_bc', a.code, {width:1.2, height:38, fontSize:11, margin:0});
+}
+
+/* =====================================================================
+   STOK ASET
+   ===================================================================== */
+VIEWS.stock = function(){
+  const q = UI.q.stock || '', fo = UI.f.stOrg || '', fc = UI.f.stCat || '', fk = UI.f.stCond || '', fs = UI.f.stSisa || '';
+  const list = DB.assets
+    .filter(a => (!fo || a.orgId === fo) && (!fc || a.catId === fc) && (!fk || a.condition === fk) && (!fs || (fs === 'ada' ? sisaQty(a) > 0 : sisaQty(a) === 0))
+      && match(q, a.code, a.brand, a.type, assetHasSN(a) ? a.serial : '', assetHasSN(a) ? a.spec : '', catName(a), a.note))
+    .sort((x,y) => x.code.localeCompare(y.code));
+  TMP.stockIds = list.map(a => a.id);
+  const showSN = list.some(assetHasSN);
+  let tQ = 0, tA = 0, tS = 0;
+  list.forEach(a => { tQ += +a.qty || 1; tA += allocQty(a.id); tS += sisaQty(a); });
+  const rows = list.map(a => { const sn = assetHasSN(a), sisa = sisaQty(a); return `<tr>
+    <td><img src="${esc(imgOf(a))}" class="w-11 h-11 rounded-lg object-cover border border-slate-200 cursor-pointer" onclick="previewImage('${a.id}')" alt=""></td>
+    <td class="font-semibold whitespace-nowrap">${esc(catName(a))}${sn ? '' : ' <span class="badge b-gray">Non-SN</span>'}</td><td>${tag(a.code)}</td><td>${esc(a.brand)}</td><td class="whitespace-nowrap">${esc(orgName(a.orgId))}</td><td>${esc(a.type)}</td>
+    ${showSN ? `<td class="mono text-xs">${sn ? esc(a.serial) : '<span class="text-slate-300">—</span>'}</td><td class="text-xs text-slate-600" style="min-width:160px;max-width:220px">${sn ? esc(a.spec) : '<span class="text-slate-300">—</span>'}</td>` : ''}
+    <td class="r font-semibold">${num(a.qty)}</td><td class="r">${allocQty(a.id)}</td>
+    <td class="r"><span class="badge ${sisa > 0 ? 'b-green' : 'b-gray'}">${sisa}</span></td>
+    <td>${warrantyBadge(a)}</td>
+    <td>${can() ? `<select class="input input-sm" onchange="setCondition('${a.id}',this.value)">${opts(CONDITIONS, a.condition, x => x, x => x)}</select>` : condBadge(a.condition)}</td>
+    <td>${svcBadge(a.id)}</td><td class="text-xs text-slate-600" style="min-width:120px">${esc(a.note) || '-'}</td>
+    <td class="whitespace-nowrap">${can() && sisa > 0 ? `<button class="btn btn-primary btn-sm" onclick="openPlacementForm(null,'${a.id}')" title="Alokasikan ke ruangan"><i class="fa-solid fa-location-dot"></i>Alokasikan</button> ` : ''}<button class="btn btn-ghost btn-sm" onclick="showLabels(['${a.id}'])" title="Barcode / QR"><i class="fa-solid fa-qrcode"></i></button>
+      <button class="btn btn-ghost btn-sm" onclick="showAsset('${a.id}')" title="Detail"><i class="fa-solid fa-eye"></i></button>
+      ${can() ? `<button class="btn btn-ghost btn-sm" onclick="editAssetNote('${a.id}')" title="Edit keterangan"><i class="fa-solid fa-pen"></i></button><button class="btn btn-warn btn-sm" onclick="openServiceForm(null,'${a.id}')" title="Catat service"><i class="fa-solid fa-screwdriver-wrench"></i></button>${delBtn('deletePurchase',a.purchaseId)}` : ''}</td></tr>`; }).join('');
+  return `<div class="flex flex-wrap items-center gap-2 mb-4">
+    <input id="q_stock" class="input" style="max-width:260px" placeholder="Cari kode, brand, serial…" value="${esc(q)}" oninput="setQ('stock',this.value)">
+    <select class="input" style="max-width:190px" onchange="setF('stOrg',this.value)">${opts(DB.orgs, fo, x => x.id, x => x.name, 'Semua organisasi')}</select>
+    <select class="input" style="max-width:170px" onchange="setF('stCat',this.value)">${opts(DB.categories, fc, x => x.id, x => x.name, 'Semua kategori')}</select>
+    <select class="input" style="max-width:160px" onchange="setF('stCond',this.value)">${opts(CONDITIONS, fk, x => x, x => x, 'Semua kondisi')}</select>
+    <select class="input" style="max-width:170px" onchange="setF('stSisa',this.value)">${opts([['ada','Sisa stok > 0'],['habis','Sisa stok = 0']], fs, x => x[0], x => x[1], 'Semua stok')}</select>
+    <div class="flex-1"></div><button class="btn btn-ghost" onclick="showLabels(TMP.stockIds)"><i class="fa-solid fa-print"></i>Cetak label (hasil filter)</button></div>
+  <div class="card overflow-hidden"><div class="px-4 py-2.5 text-sm text-slate-600 border-b border-slate-200 flex flex-wrap gap-x-6"><span><b>${list.length}</b> jenis barang</span><span>Total Qty <b>${tQ}</b></span><span>Dialokasikan ke ruangan <b>${tA}</b></span><span>Sisa di Stok Aset Utama <b>${tS}</b></span></div>
+  <div class="px-4 py-2 text-xs text-slate-500 border-b border-slate-200">Barang di stok baru dapat dipakai setelah dialokasikan ke ruangan lewat menu <b>Lokasi Aset</b> (atau tombol Alokasikan). Sisa Qty = Total beli − total alokasi di semua ruangan.</div>
+  <div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Gambar</th><th>Nama barang</th><th>Kode barang</th><th>Brand</th><th>Organisasi</th><th>Tipe</th>${showSN ? '<th>Serial number</th><th>Spesifikasi</th>' : ''}<th class="r">Total Qty</th><th class="r">Dialokasikan</th><th class="r">Sisa Qty</th><th>Masa garansi</th><th>Kondisi</th><th>Maintenance</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+  <tbody>${rows || emptyRow(showSN ? 16 : 14,'Belum ada barang di stok.')}</tbody></table></div></div>`;
+};
+function setCondition(id, v){
+  if(!guard()) return; const a = byId(DB.assets,id); a.condition = v; log('Kondisi '+a.code+' diubah menjadi '+v); save(); render(); toast('Kondisi '+a.code+': '+v);
+}
+function editAssetNote(id){
+  if(!guard()) return; const a = byId(DB.assets,id);
+  showModal('Edit aset '+esc(a.code), `<div class="space-y-3">${fld('Kondisi', `<select id="ea_cond" class="input">${opts(CONDITIONS, a.condition, x => x, x => x)}</select>`)}${fld('Keterangan', `<textarea id="ea_note" class="input" rows="3">${esc(a.note)}</textarea>`)}</div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveAssetNote('${id}')">Simpan</button>`, 'max-w-md');
+}
+function saveAssetNote(id){ const a = byId(DB.assets,id); a.condition = val('ea_cond'); a.note = val('ea_note').trim(); log('Mengubah data stok '+a.code); save(); closeModal(); render(); toast('Aset diperbarui.'); }
+
+/* =====================================================================
+   PEMINJAMAN
+   ===================================================================== */
+/* =====================================================================
+   SERVICE / MAINTENANCE
+   ===================================================================== */
+VIEWS.service = function(){
+  const q = UI.q.svc || '', fs = UI.f.svcStatus || '';
+  const list = DB.services.map(s => ({s, a:byId(DB.assets,s.assetId)})).filter(x => x.a)
+    .filter(x => (!fs || x.s.status === fs) && match(q, x.a.code, x.a.brand, x.a.type, x.s.vendor, x.s.type, x.s.invoice, x.s.note))
+    .sort((x,y) => y.s.date.localeCompare(x.s.date));
+  const running = DB.services.filter(s => s.status === 'Dalam Perbaikan').length, done = DB.services.filter(s => s.status === 'Selesai').length;
+  const cost = DB.services.reduce((t,s) => t + (+s.cost || 0), 0);
+  const rows = list.map(({s,a}) => { return `<tr><td class="whitespace-nowrap">${fmtD(s.date)}</td><td>${tag(a.code)}<div class="text-xs text-slate-500 mt-1">${esc(itemTitle(a))}</div></td>
+    <td>${allocQty(a.id) > 0 ? `<span class="badge b-blue"><i class="fa-solid fa-location-dot"></i>${allocQty(a.id)} unit di ruangan</span>` : false ? '<span class="badge b-blue"><i class="fa-solid fa-location-dot"></i>Lokasi tetap</span>' : '<span class="badge b-gray">Di stok</span>'}</td><td>${esc(s.vendor)}</td><td>${esc(s.type)}</td><td class="mono text-xs whitespace-nowrap">${esc(s.invoice) || '-'}</td><td class="r whitespace-nowrap">${idr(s.cost)}</td>
+    <td>${s.status === 'Selesai' ? `<span class="badge b-green">Selesai</span><div class="text-xs text-slate-500 mt-1">${fmtD(s.completedDate)}</div>` : '<span class="badge b-amber"><i class="fa-solid fa-screwdriver-wrench"></i>Dalam Perbaikan</span>'}</td><td class="text-xs text-slate-600">${esc(s.note) || '-'}</td>
+    <td class="whitespace-nowrap">${can() ? `${s.status !== 'Selesai' ? `<button class="btn btn-primary btn-sm" onclick="completeService('${s.id}')"><i class="fa-solid fa-check"></i>Tandai selesai</button>` : ''}<button class="btn btn-ghost btn-sm" onclick="openServiceForm('${s.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>${delBtn('deleteService',s.id)}` : '<span class="text-slate-400">-</span>'}</td></tr>`; }).join('');
+  return `<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">${statCard('fa-screwdriver-wrench','#b4790a','Dalam perbaikan', running+' unit','')}${statCard('fa-circle-check','#0f6b5c','Service selesai', done+' catatan','')}${statCard('fa-coins','#163a6b','Total biaya service', idr(cost),'')}</div>
+  <div class="flex flex-wrap items-center gap-2 mb-4"><input id="q_svc" class="input" style="max-width:260px" placeholder="Cari kode, vendor, invoice…" value="${esc(q)}" oninput="setQ('svc',this.value)">
+    <select class="input" style="max-width:190px" onchange="setF('svcStatus',this.value)">${opts(['Dalam Perbaikan','Selesai'], fs, x => x, x => x, 'Semua status')}</select><div class="flex-1"></div>
+    ${can() ? `<button class="btn btn-primary" onclick="openServiceForm()"><i class="fa-solid fa-plus"></i>Catat service</button>` : ''}</div>
+  <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Tanggal</th><th>Aset</th><th>Posisi aset</th><th>Vendor / tempat</th><th>Jenis service</th><th>No. Invoice</th><th class="r">Biaya</th><th>Status</th><th>Catatan</th><th>Aksi</th></tr></thead><tbody>${rows || emptyRow(10,'Belum ada catatan service.')}</tbody></table></div></div>`;
+};
+function openServiceForm(id, presetAsset){
+  if(!guard()) return;
+  const s = id ? byId(DB.services,id) : null; const assetId = s ? s.assetId : (presetAsset || '');
+  const assets = DB.assets.slice().sort((x,y) => x.code.localeCompare(y.code));
+  if(!assets.length){ toast('Belum ada aset.','error'); return; }
+  const body = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+    ${fld('Aset', `<select id="sv_asset" class="input">${opts(assets, assetId, x => x.id, x => x.code+' — '+itemTitle(x)+(allocQty(x.id) > 0 ? ' [di ruangan: '+allocQty(x.id)+']' : ' [stok]'), 'Pilih aset…')}</select>`, 'sm:col-span-2', true)}
+    ${fld('Tanggal service', `<input id="sv_date" type="date" class="input" value="${esc(s ? s.date : todayStr())}">`, '', true)}
+    ${fld('Vendor / tempat service', `<input id="sv_vendor" class="input" list="dl_sv" value="${esc(s ? s.vendor : '')}"><datalist id="dl_sv">${DB.vendors.map(v => `<option value="${esc(v.name)}">`).join('')}</datalist>`, '', true)}
+    ${fld('Jenis service / perbaikan', `<input id="sv_type" class="input" value="${esc(s ? s.type : '')}" placeholder="Contoh: Ganti baterai">`, 'sm:col-span-2', true)}
+    ${fld('Biaya service (IDR)', `<input id="sv_cost" class="input money" inputmode="numeric" value="${s && s.cost ? num(s.cost) : ''}" placeholder="0">`)}
+    ${fld('No. Invoice / Faktur Service', `<input id="sv_invoice" class="input mono" value="${esc(s ? s.invoice : '')}" placeholder="Contoh: INV/SVC/2026/0012">`)}
+    ${fld('Status service', `<select id="sv_status" class="input">${opts(['Dalam Perbaikan','Selesai'], s ? s.status : 'Dalam Perbaikan', x => x, x => x)}</select>`)}
+    ${fld('Catatan', `<textarea id="sv_note" class="input" rows="2">${esc(s ? s.note : '')}</textarea>`, 'sm:col-span-2')}</div>`;
+  showModal(s ? 'Edit catatan service' : 'Catat service barang', body, `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveService('${id || ''}')"><i class="fa-solid fa-floppy-disk"></i>Simpan</button>`, 'max-w-2xl');
+}
+function saveService(id){
+  const d = {assetId:val('sv_asset'), date:val('sv_date'), vendor:val('sv_vendor').trim(), type:val('sv_type').trim(), cost:moneyVal('sv_cost'), invoice:val('sv_invoice').trim(), status:val('sv_status'), note:val('sv_note').trim()};
+  if(!d.assetId || !d.date || !d.vendor || !d.type){ toast('Aset, tanggal, vendor, dan jenis service wajib diisi.','error'); return; }
+  const a = byId(DB.assets, d.assetId);
+  if(id){ const s = byId(DB.services,id); Object.assign(s, d); if(d.status === 'Selesai' && !s.completedDate) s.completedDate = todayStr(); if(d.status !== 'Selesai') s.completedDate = ''; log('Mengubah service '+a.code); }
+  else { DB.services.push({id:uid('svc_'), ...d, completedDate: d.status === 'Selesai' ? todayStr() : ''}); log('Service '+a.code+': '+d.type+' ('+d.status+')'); }
+  save(); closeModal(); render(); toast(d.status === 'Dalam Perbaikan' ? a.code+' berstatus Dalam Perbaikan di Stok / Lokasi Aset.' : 'Catatan service tersimpan.');
+}
+function completeService(id){
+  if(!guard()) return; const s = byId(DB.services,id), a = byId(DB.assets,s.assetId);
+  confirmBox(`Tandai service <b>${esc(a.code)}</b> (${esc(s.type)}) sebagai selesai?`, () => { s.status = 'Selesai'; s.completedDate = todayStr(); log('Service '+a.code+' selesai'); save(); render(); toast('Service selesai. Status aset kembali normal.'); }, {ok:'Tandai selesai'});
+}
+function deleteService(id){
+  if(!guardDel()) return; const s = byId(DB.services,id);
+  confirmBox('Hapus catatan service ini?', () => { DB.services = DB.services.filter(x => x.id !== id); save(); render(); toast('Catatan service dihapus.'); }, {danger:true, ok:'Hapus'});
+}
+
+/* =====================================================================
+   MASTER DATA
+   ===================================================================== */
+const MASTERS = {
+  org:{label:'Organisasi', key:'orgs', cols:[['Nama organisasi', x => esc(x.name)],['Kode', x => tag(x.code)],['Jumlah aset', x => DB.assets.filter(a => a.orgId === x.id).length]],
+    fields:[{k:'name',l:'Nama organisasi',req:1},{k:'code',l:'Kode organisasi / singkatan',req:1,code:1,hint:'Contoh: KM, VBI. Tanpa spasi dan tanpa tanda "/".'}],
+    used:x => DB.assets.some(a => a.orgId === x.id) || DB.employees.some(e => e.orgId === x.id)},
+  category:{label:'Kategori / nama barang', key:'categories', cols:[['Nama barang', x => esc(x.name)],['Kode nama barang', x => tag(x.code)],['Ber-SN', x => x.hasSN === false ? '<span class="badge b-gray">Non-SN</span>' : '<span class="badge b-blue">Ber-SN</span>'],['Jumlah aset', x => DB.assets.filter(a => a.catId === x.id).length]],
+    fields:[{k:'name',l:'Nama barang',req:1},{k:'hasSN',l:'Jenis barang',type:'bool'},{k:'code',l:'Kode nama barang',req:1,code:1,hint:'Contoh: IT01 (Laptop), PM01 (AC). Tanpa spasi dan tanpa tanda "/".'}],
+    used:x => DB.assets.some(a => a.catId === x.id)},
+  employee:{label:'Karyawan', key:'employees', cols:[['Nama karyawan', x => esc(x.name)],['Organisasi', x => esc(orgName(x.orgId))],['Departemen', x => esc(x.dept)],['Posisi', x => esc(x.position)]],
+    fields:[{k:'name',l:'Nama karyawan',req:1},{k:'orgId',l:'Organisasi',req:1,type:'select',opts:() => DB.orgs.map(o => [o.id, o.name])},{k:'dept',l:'Departemen',req:1},{k:'position',l:'Posisi',req:1}],
+    used:x => DB.purchases.some(p => p.submitterId === x.id)},
+  vendor:{label:'Vendor / supplier', key:'vendors', cols:[['Nama vendor', x => esc(x.name)],['Kontak', x => esc(x.contact)],['Alamat', x => esc(x.address)]],
+    fields:[{k:'name',l:'Nama vendor',req:1},{k:'contact',l:'Kontak (telepon / email)',req:1},{k:'address',l:'Alamat',type:'textarea'}],
+    used:x => DB.assets.some(a => a.vendorId === x.id)},
+  location:{label:'Lokasi & ruangan', key:'locations', cols:[['Lokasi', x => esc(x.location)],['Ruangan', x => esc(x.room)]],
+    fields:[{k:'location',l:'Lokasi',req:1},{k:'room',l:'Ruangan',req:1}], used:() => false}
+};
+VIEWS.master = function(){
+  const tab = UI.tab.master, M = MASTERS[tab], q = UI.q.master || '';
+  const list = DB[M.key].filter(x => !q || JSON.stringify(x).toLowerCase().includes(q.toLowerCase()));
+  const rows = list.map(x => `<tr>${M.cols.map(c => `<td>${c[1](x)}</td>`).join('')}<td class="whitespace-nowrap">${can() ? `<button class="btn btn-ghost btn-sm" onclick="masterForm('${tab}','${x.id}')"><i class="fa-solid fa-pen"></i></button> ${delBtn('masterDel',tab,x.id)}` : '<span class="text-slate-400">-</span>'}</td></tr>`).join('');
+  return `${tabsHtml(Object.keys(MASTERS).map(k => [k, MASTERS[k].label]), tab, 'setMasterTab')}
+  ${shBanner(tab)}
+  <div class="flex flex-wrap items-center gap-2 mb-4"><input id="q_master" class="input" style="max-width:280px" placeholder="Cari…" value="${esc(q)}" oninput="setQ('master',this.value)"><div class="flex-1"></div>
+    ${can() ? `<button class="btn btn-primary" onclick="masterForm('${tab}')"><i class="fa-solid fa-plus"></i>Tambah ${esc(M.label.toLowerCase())}</button>` : ''}</div>
+  <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="tbl"><thead><tr>${M.cols.map(c => `<th>${c[0]}</th>`).join('')}<th>Aksi</th></tr></thead><tbody>${rows || emptyRow(M.cols.length + 1)}</tbody></table></div></div>`;
+};
+function setMasterTab(k){ UI.tab.master = k; UI.q.master = ''; render(); }
+function masterForm(type, id){
+  if(!guard()) return; const M = MASTERS[type], x = id ? byId(DB[M.key], id) : {};
+  const body = `<div class="space-y-3">${M.fields.map(f => fld(f.l, f.type === 'bool' ? `<select id="mf_${f.k}" class="input"><option value="true" ${x[f.k] !== false ? 'selected' : ''}>Ber-SN (isi Serial Number & Spesifikasi)</option><option value="false" ${x[f.k] === false ? 'selected' : ''}>Non-SN (tanpa Serial Number & Spesifikasi)</option></select>` : f.type === 'select'
+    ? `<select id="mf_${f.k}" class="input">${opts(f.opts(), x[f.k] || '', o => o[0], o => o[1], 'Pilih…')}</select>`
+    : f.type === 'textarea' ? `<textarea id="mf_${f.k}" class="input" rows="2">${esc(x[f.k] || '')}</textarea>`
+    : `<input id="mf_${f.k}" class="input ${f.code ? 'mono' : ''}" value="${esc(x[f.k] || '')}">`, '', f.req, f.hint || '')).join('')}
+    ${id && (type === 'org' || type === 'category') ? '<div class="hint">Mengubah kode tidak mengubah kode barang yang sudah terbit.</div>' : ''}</div>`;
+  showModal((id ? 'Edit ' : 'Tambah ')+esc(M.label.toLowerCase()), body, `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="masterSave('${type}','${id || ''}')">Simpan</button>`, 'max-w-lg');
+}
+function masterSave(type, id){
+  const M = MASTERS[type], d = {};
+  for(const f of M.fields){
+    let v = val('mf_'+f.k).trim(); if(f.code) v = v.toUpperCase();
+    if(f.req && !v){ toast(f.l+' wajib diisi.','error'); return; }
+    if(f.code && !/^[A-Z0-9-]+$/.test(v)){ toast('Kode hanya boleh huruf, angka, dan tanda hubung (tanpa spasi atau "/").','error'); return; }
+    d[f.k] = f.type === 'bool' ? v === 'true' : v;
+  }
+  const codeF = M.fields.find(f => f.code);
+  if(codeF && DB[M.key].some(x => x[codeF.k] === d[codeF.k] && x.id !== id)){ toast('Kode '+d[codeF.k]+' sudah digunakan.','error'); return; }
+  if(id){ Object.assign(byId(DB[M.key], id), d); }
+  else DB[M.key].push({id:uid(type.slice(0,3)+'_'), ...d});
+  log((id ? 'Mengubah ' : 'Menambah ')+M.label.toLowerCase()+': '+(d.name || d.location)); save(); closeModal(); render(); toast('Data tersimpan.');
+}
+function masterDel(type, id){
+  if(!guardDel()) return; const M = MASTERS[type], x = byId(DB[M.key], id);
+  if(M.used(x)){ toast('Data ini masih digunakan oleh transaksi/data lain dan tidak dapat dihapus.','error'); return; }
+  if(shUsedByOther(M.key, id)){ toast('Data ini masih digunakan oleh sistem '+(APP_DOMAIN === 'IT' ? 'Property Management' : 'Aset IT')+' dan tidak dapat dihapus.','error'); return; }
+  confirmBox(`Hapus <b>${esc(x.name || x.location)}</b>?`, () => { DB[M.key] = DB[M.key].filter(y => y.id !== id); log('Menghapus '+M.label.toLowerCase()+': '+(x.name || x.location)); save(); render(); toast('Data dihapus.'); }, {danger:true, ok:'Hapus'});
+}
+
+/* =====================================================================
+   USER MANAGEMENT
+   ===================================================================== */
+VIEWS.users = function(){
+  const rows = DB.users.map(u => `<tr><td class="font-semibold">${esc(u.name)}${u.id === DB.session.userId ? ' <span class="badge b-green">Aktif</span>' : ''}</td><td class="mono text-xs">${esc(u.username)}</td>
+    <td><span class="badge ${u.role === 'Super Admin' ? 'b-red' : u.role === 'Admin' ? 'b-blue' : 'b-gray'}">${esc(u.role)}</span></td>
+    <td><span class="badge ${domainOf(u) === 'ALL' ? 'b-blue' : domainOf(u) === 'IT' ? 'b-amber' : 'b-green'}">${ACCESS_SHORT[domainOf(u)]}</span></td>
+    <td class="whitespace-nowrap"><button class="btn btn-ghost btn-sm" onclick="userForm('${u.id}')"><i class="fa-solid fa-pen"></i></button> <button class="btn btn-danger btn-sm" onclick="userDel('${u.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
+  const Y = '<i class="fa-solid fa-check text-emerald-600"></i>', N = '<i class="fa-solid fa-minus text-slate-300"></i>';
+  return `<div class="flex items-center gap-2 mb-4"><div class="text-sm text-slate-600 flex-1">Kelola akun dan password pengguna. Password disimpan sebagai hash di LocalStorage browser. Gunakan pemilih "Lihat sebagai" di bagian atas untuk mensimulasikan hak akses tiap role.</div>
+    <button class="btn btn-primary" onclick="userForm()"><i class="fa-solid fa-plus"></i>Tambah user</button></div>
+  <div class="card overflow-hidden mb-5"><div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Nama</th><th>Username</th><th>Role</th><th>Akses System</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+  <div class="card overflow-hidden"><div class="px-4 py-3 font-bold text-ink border-b border-slate-200">Matriks hak akses</div><div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Fitur</th><th class="text-center">Super Admin</th><th class="text-center">Admin</th><th class="text-center">Manager / Supervisor / Staff</th></tr></thead><tbody>
+    ${[['Melihat data & mencetak laporan',1,1,1],['Input data baru (pembelian, alokasi Lokasi Aset, service, master data)',1,1,0],['Edit / perbarui data (termasuk pengembalian aset dan penyelesaian service)',1,1,0],['Hapus data (semua modul)',1,0,0],['Import / restore data',1,0,0],['Tambah / edit / hapus user',1,0,0],['Reset ke data contoh',1,0,0]].map(r => `<tr><td>${r[0]}</td><td class="text-center">${r[1] ? Y : N}</td><td class="text-center">${r[2] ? Y : N}</td><td class="text-center">${r[3] ? Y : N}</td></tr>`).join('')}</tbody></table></div></div>`;
+};
+function userForm(id){
+  if(!guardSA()) return; const u = id ? byId(DB.users,id) : {name:'',username:'',role:'Staff',accessDomain:APP_DOMAIN};
+  showModal(id ? 'Edit user' : 'Tambah user', `<div class="space-y-3">${fld('Nama lengkap', `<input id="us_name" class="input" value="${esc(u.name)}">`, '', true)}${fld('Username', `<input id="us_user" class="input mono" autocomplete="off" value="${esc(u.username)}">`, '', true)}${fld('Role', `<select id="us_role" class="input">${opts(ROLES, u.role, x => x, x => x)}</select>`, '', true)}
+    ${fld('Akses System', `<select id="us_domain" class="input">${opts(ACCESS_OPTS, domainOf(u), x => x[0], x => x[1])}</select>`, '', true, 'Sistem yang boleh dibuka user ini. Super Admin otomatis memiliki Semua Akses.')}
+    ${fld(id ? 'Password baru' : 'Password', `<input id="us_pass" type="password" class="input" autocomplete="new-password" placeholder="${id ? 'Kosongkan bila tidak diubah' : 'Minimal 6 karakter'}">`, '', !id, id ? 'Isi hanya untuk mereset password user ini.' : 'Minimal 6 karakter.')}</div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="userSave('${id || ''}')">Simpan</button>`, 'max-w-md');
+}
+function userSave(id){
+  if(!guardSA()) return; const d = {name:val('us_name').trim(), username:val('us_user').trim().toLowerCase(), role:val('us_role'), accessDomain:val('us_domain') || 'ALL'}, pw = val('us_pass');
+  if(d.role === 'Super Admin') d.accessDomain = 'ALL';
+  if(!d.name || !d.username){ toast('Nama dan username wajib diisi.','error'); return; }
+  if(!/^[a-z0-9._-]+$/.test(d.username)){ toast('Username hanya boleh huruf kecil, angka, titik, garis bawah, dan tanda hubung.','error'); return; }
+  if(DB.users.some(x => x.username === d.username && x.id !== id)){ toast('Username sudah digunakan.','error'); return; }
+  if((!id || pw) && pw.length < 6){ toast('Password minimal 6 karakter.','error'); return; }
+  if(id){ const u = byId(DB.users,id); if(u.role === 'Super Admin' && d.role !== 'Super Admin' && DB.users.filter(x => x.role === 'Super Admin').length === 1){ toast('Harus ada minimal satu Super Admin.','error'); return; } Object.assign(u, d); if(pw) u.passHash = hashPw(pw); }
+  else DB.users.push({id:uid('usr_'), ...d, passHash:hashPw(pw)});
+  log((id ? 'Mengubah' : 'Menambah')+' user '+d.name); save(); closeModal(); render(); toast('User tersimpan.');
+}
+function userDel(id){
+  if(!guardSA()) return; const u = byId(DB.users,id);
+  if(id === DB.session.userId || id === DB.session.realUserId){ toast('Anda tidak dapat menghapus user yang sedang aktif.','error'); return; }
+  if(u.role === 'Super Admin' && DB.users.filter(x => x.role === 'Super Admin').length === 1){ toast('Harus ada minimal satu Super Admin.','error'); return; }
+  confirmBox(`Hapus user <b>${esc(u.name)}</b>?`, () => { DB.users = DB.users.filter(x => x.id !== id); log('Menghapus user '+u.name); save(); render(); toast('User dihapus.'); }, {danger:true, ok:'Hapus'});
+}
+
+/* =====================================================================
+   LAPORAN
+   ===================================================================== */
+function reportData(kind){
+  if(kind === 'dep'){
+    const fo = UI.f.repOrg || '';
+    const list = DB.assets.filter(a => !fo || a.orgId === fo).sort((a,b) => a.code.localeCompare(b.code));
+    let tp = 0, ta = 0, tb = 0; const rows = [], csv = [];
+    list.forEach((a,i) => { const d = depInfo(a); tp += totalPrice(a); ta += d.accum; tb += d.book;
+      rows.push([i+1, a.code, itemTitle(a), orgName(a.orgId), fmtD(a.buyDate), idr(totalPrice(a)), d.life, d.period, idr(d.monthly), idr(d.accum), idr(d.book)]);
+      csv.push([i+1, a.code, itemTitle(a), orgName(a.orgId), a.buyDate, Math.round(totalPrice(a)), d.life, d.period, Math.round(d.monthly), Math.round(d.accum), Math.round(d.book)]); });
+    return {title:'Laporan Nilai Buku & Penyusutan Aset', sub: fo ? 'Organisasi: '+orgName(fo) : 'Semua organisasi', file:'laporan-penyusutan-aset',
+      head:['No','Kode barang','Nama barang','Organisasi','Tgl beli','Harga perolehan','Masa (bln)','Periode','Susut / bln','Akumulasi susut','Nilai buku'],
+      rows, csv, foot:['','','','','Total', idr(tp),'','','', idr(ta), idr(tb)], right:[5,6,7,8,9,10]};
+  }
+  if(kind === 'service'){
+    const list = DB.services.map(s => ({s, a:byId(DB.assets,s.assetId)})).filter(x => x.a).sort((x,y) => y.s.date.localeCompare(x.s.date));
+    let tc = 0; const rows = [], csv = [];
+    list.forEach(({s,a},i) => { tc += +s.cost || 0;
+      rows.push([i+1, fmtD(s.date), a.code, itemTitle(a), s.vendor, s.invoice || '-', s.type, idr(s.cost), s.status, s.completedDate ? fmtD(s.completedDate) : '-']);
+      csv.push([i+1, s.date, a.code, itemTitle(a), s.vendor, s.invoice || '', s.type, Math.round(+s.cost || 0), s.status, s.completedDate || '', s.note || '']); });
+    return {title:'Laporan Riwayat Service & Maintenance', sub:'Seluruh catatan service beserta nomor invoice / faktur', file:'laporan-service',
+      head:['No','Tanggal','Kode barang','Nama barang','Vendor / tempat','No. Invoice','Jenis service','Biaya','Status','Tgl selesai'], rows, csv,
+      csvHead:['No','Tanggal','Kode barang','Nama barang','Vendor / tempat','No. Invoice','Jenis service','Biaya','Status','Tgl selesai','Catatan'], foot:['','','','','','','Total', idr(tc),'',''], right:[7]};
+  }
+  const g = UI.f.repGroup || 'org'; const groups = {};
+  const add = (key, a, share, units) => { const o = groups[key] = groups[key] || {n:0, price:0, accum:0, book:0, svc:0}; const d = depInfo(a);
+    o.n += units; o.price += totalPrice(a) * share; o.accum += d.accum * share; o.book += d.book * share; if(inService(a.id)) o.svc += units; };
+  DB.assets.forEach(a => {
+    const q = +a.qty || 1;
+    if(g === 'loc'){
+      activePlacements(a.id).forEach(p => add(p.location, a, (+p.qtyAllocated || 0) / q, +p.qtyAllocated || 0));
+      const s = sisaQty(a); if(s > 0) add('Gudang / stok', a, s / q, s);
+    } else add(g === 'org' ? orgName(a.orgId) : catName(a), a, 1, q);
+  });
+  const keys = Object.keys(groups).sort(); const T = {n:0, price:0, accum:0, book:0, svc:0};
+  const rows = [], csv = [];
+  keys.forEach(k => { const o = groups[k]; Object.keys(T).forEach(t => T[t] += o[t]);
+    rows.push([k, o.n, idr(o.price), idr(o.accum), idr(o.book), o.svc]); csv.push([k, o.n, Math.round(o.price), Math.round(o.accum), Math.round(o.book), o.svc]); });
+  const gl = g === 'org' ? 'Organisasi' : g === 'cat' ? 'Kategori' : 'Lokasi';
+  return {title:'Laporan Aset Berdasarkan '+gl, sub:'Barang yang dialokasikan mengikuti lokasi penempatan (Lokasi Aset), sisa yang belum dialokasikan dicatat sebagai Gudang / stok', file:'laporan-aset-per-'+g,
+    head:[gl,'Jumlah unit','Total harga perolehan','Akumulasi penyusutan','Nilai buku','Dalam service'], rows, csv,
+    foot:['Total', T.n, idr(T.price), idr(T.accum), idr(T.book), T.svc], right:[1,2,3,4,5]};
+}
+function reportTable(r, cls){
+  const R = i => r.right.includes(i) ? ' class="r"' : '';
+  return `<table class="${cls}"><thead><tr>${r.head.map((h,i) => `<th${R(i)}>${esc(h)}</th>`).join('')}</tr></thead><tbody>${r.rows.map(row => `<tr>${row.map((c,i) => `<td${R(i)}>${esc(c)}</td>`).join('')}</tr>`).join('') || emptyRow(r.head.length,'Tidak ada data untuk filter ini.')}</tbody>${r.foot ? `<tfoot><tr>${r.foot.map((c,i) => `<td${R(i)}>${esc(c)}</td>`).join('')}</tr></tfoot>` : ''}</table>`;
+}
+VIEWS.reports = function(){
+  const tab = UI.tab.reports, r = reportData(tab);
+  let filters = '';
+  if(tab === 'dep') filters = `<select class="input" style="max-width:220px" onchange="setF('repOrg',this.value)">${opts(DB.orgs, UI.f.repOrg || '', x => x.id, x => x.name, 'Semua organisasi')}</select>`;
+  if(tab === 'group') filters = `<select class="input" style="max-width:220px" onchange="setF('repGroup',this.value)">${opts([['org','Berdasarkan organisasi'],['cat','Berdasarkan kategori'],['loc','Berdasarkan lokasi']], UI.f.repGroup || 'org', x => x[0], x => x[1])}</select>`;
+  return `${tabsHtml([['dep','Nilai buku & penyusutan'],['service','Riwayat service & invoice'],['group','Aset per organisasi / kategori / lokasi']], tab, 'setRepTab')}
+  <div class="flex flex-wrap items-center gap-2 mb-4">${filters}<div class="flex-1"></div><button class="btn btn-ghost" onclick="exportReportCSV()"><i class="fa-solid fa-file-csv"></i>Export Excel (CSV)</button><button class="btn btn-primary" onclick="printReport()"><i class="fa-solid fa-file-pdf"></i>Cetak / simpan PDF</button></div>
+  <div class="card overflow-hidden"><div class="px-4 py-3 border-b border-slate-200"><div class="font-bold text-ink">${esc(r.title)}</div><div class="text-xs text-slate-500">${esc(r.sub)}</div></div><div class="overflow-x-auto">${reportTable(r,'tbl')}</div></div>`;
+};
+function setRepTab(k){ UI.tab.reports = k; render(); }
+function exportReportCSV(){ const r = reportData(UI.tab.reports); download(r.file+'-'+todayStr()+'.csv', toCSV(r.csvHead || r.head, r.csv), 'text/csv;charset=utf-8'); toast('File CSV berhasil dibuat.'); }
+function printReport(){
+  const r = reportData(UI.tab.reports);
+  printHTML(`<div style="margin-bottom:10px"><div style="font-size:16px;font-weight:700">${esc(r.title)}</div><div style="font-size:11px">${esc(r.sub)}</div><div style="font-size:10px;color:#444">Dicetak ${fmtD(new Date())} oleh ${esc(currentUser().name)} — Katamata Group</div></div>${reportTable(r,'ptbl')}`);
+}
+
+/* =====================================================================
+   BACKUP, EXPORT & IMPORT
+   ===================================================================== */
+VIEWS.backup = function(){
+  const size = new Blob([JSON.stringify(DB)]).size, kb = (size/1024).toFixed(1);
+  const cnt = [['Aset',DB.assets.length],['Pembelian',DB.purchases.length],['Service',DB.services.length],['Karyawan',DB.employees.length],['User',DB.users.length]];
+  const box = (icon, title, desc, btn) => `<div class="card p-5 flex flex-col"><div class="w-10 h-10 rounded-lg flex items-center justify-center mb-3" style="background:#163a6b1a;color:var(--brand)"><i class="fa-solid ${icon}"></i></div><h3 class="font-bold text-ink">${title}</h3><p class="text-sm text-slate-600 mt-1 mb-4 flex-1">${desc}</p>${btn}</div>`;
+  return `<div class="card p-5 mb-4"><div class="flex flex-wrap gap-x-8 gap-y-3 items-center"><div><div class="text-xs text-slate-500">Ukuran data tersimpan</div><div class="display text-2xl font-bold text-ink">${kb} KB</div><div class="text-xs text-slate-500">dari kuota LocalStorage sekitar 5.000 KB</div></div>
+    <div class="flex flex-wrap gap-2 flex-1">${cnt.map(c => `<div class="rounded-lg bg-slate-50 px-3 py-2 text-center min-w-[84px]"><div class="font-bold text-ink">${c[1]}</div><div class="text-[11px] text-slate-500">${c[0]}</div></div>`).join('')}</div></div></div>
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    ${box('fa-table','Google Sheets (database online)', syncDesc(), syncBtns())}
+    ${box('fa-file-export','Backup seluruh data (JSON)','Unduh seluruh data aplikasi termasuk master, aset, transaksi, dan user dalam satu file JSON.', `<button class="btn btn-primary" onclick="exportJSON()"><i class="fa-solid fa-download"></i>Unduh backup JSON</button>`)}
+    ${box('fa-file-import','Restore data dari JSON','Impor file backup JSON. Seluruh data saat ini akan diganti. Hanya Super Admin.', isSA() ? `<label class="btn btn-ghost cursor-pointer"><i class="fa-solid fa-upload"></i>Pilih file JSON<input type="file" accept=".json,application/json" class="hidden" onchange="importJSON(this)"></label>` : '<span class="text-xs text-slate-500">Hanya Super Admin.</span>')}
+    ${box('fa-boxes-stacked','Export stok aset (CSV / Excel)','Daftar aset yang saat ini tersedia di stok, lengkap dengan garansi dan kondisi.', `<button class="btn btn-ghost" onclick="exportStockCSV()"><i class="fa-solid fa-file-csv"></i>Export stok CSV</button>`)}
+    ${box('fa-cart-shopping','Export data pembelian (CSV / Excel)','Seluruh data pembelian beserta nilai buku dan penyusutan terkini.', `<button class="btn btn-ghost" onclick="exportPurchaseCSV()"><i class="fa-solid fa-file-csv"></i>Export pembelian CSV</button>`)}
+    ${box('fa-screwdriver-wrench','Export data service (CSV / Excel)','Seluruh riwayat service beserta nomor invoice / faktur dan biaya.', `<button class="btn btn-ghost" onclick="exportServiceCSV()"><i class="fa-solid fa-file-csv"></i>Export service CSV</button>`)}
+    ${box('fa-rotate','Reset ke data contoh','Hapus semua data dan muat ulang data contoh. Hanya Super Admin.', isSA() ? `<button class="btn btn-danger" onclick="resetDemo()"><i class="fa-solid fa-triangle-exclamation"></i>Reset data</button>` : '<span class="text-xs text-slate-500">Hanya Super Admin.</span>')}
+  </div><div class="hint mt-3">CSV memakai pemisah titik koma (;) agar langsung terbaca rapi di Excel versi Indonesia. Bila kolom menyatu, gunakan Data → From Text/CSV dan pilih pemisah titik koma.</div>`;
+};
+function exportJSON(){ download('katamata-backup-'+todayStr()+'.json', JSON.stringify(DB, null, 2), 'application/json'); log('Backup data diunduh'); save(); toast('Backup JSON berhasil diunduh.'); }
+function importJSON(input){
+  if(!guardSA()) return; const f = input.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result); if(!validDB(d)) throw new Error('struktur file backup tidak valid');
+      confirmBox(`Restore dari <b>${esc(f.name)}</b>? Seluruh data saat ini (${DB.assets.length} aset) akan diganti dengan ${d.assets.length} aset dari file.${SYNC.enabled ? ' Data di Google Sheets juga akan tertimpa.' : ''}`, () => {
+        normalizeDB(d); ensurePasswords(d); const keep = realUser().id; DB = d;
+        DB.session = byId(d.users, keep) ? {userId:keep, realUserId:keep} : {userId:null, realUserId:null};
+        log('Restore data dari file JSON'); save(); render(); toast('Data berhasil di-restore.');
+      }, {ok:'Ya, restore', danger:true, title:'Restore data'});
+    } catch(e){ toast('Gagal import: '+e.message,'error'); }
+    input.value = '';
+  };
+  r.readAsText(f);
+}
+function resetDemo(){ if(!guardSA()) return; confirmBox('Semua data akan dihapus dan diganti data contoh (data master bersama: organisasi, karyawan, vendor, lokasi tidak dihapus, hanya ditambah data contoh).'+(SYNC.enabled ? ' Data di Google Sheets juga akan ikut tertimpa.' : '')+' Lanjutkan?', () => { const keep = realUser().id; makeSeed(); shAfterReset(); DB.session = byId(DB.users, keep) ? {userId:keep, realUserId:keep} : {userId:null, realUserId:null}; save(); UI.view = 'dashboard'; render(); toast('Data contoh dimuat ulang.'); }, {danger:true, ok:'Reset data', title:'Reset data'}); }
+function exportStockCSV(){
+  const rows = DB.assets.map(a => { const w = warrantyInfo(a), sn = assetHasSN(a); return [a.code, catName(a), a.brand, orgName(a.orgId), a.type, sn ? a.serial : '', sn ? a.spec : '', a.qty, allocQty(a.id), sisaQty(a), w.label, w.end ? w.end.getFullYear()+'-'+pad(w.end.getMonth()+1)+'-'+pad(w.end.getDate()) : '', a.condition, inService(a.id) ? 'Dalam Perbaikan' : 'Normal', a.note]; });
+  download('stok-aset-'+todayStr()+'.csv', toCSV(['Kode barang','Nama barang','Brand','Organisasi','Tipe','Serial number','Spesifikasi','Total Qty','Dialokasikan','Sisa Qty','Status garansi','Garansi berakhir','Kondisi','Status maintenance','Keterangan'], rows), 'text/csv;charset=utf-8'); toast('Export stok selesai.');
+}
+function exportServiceCSV(){ const r = reportData('service'); download('service-'+todayStr()+'.csv', toCSV(r.csvHead, r.csv), 'text/csv;charset=utf-8'); toast('Export service selesai.'); }
+function exportPurchaseCSV(){
+  const rows = DB.purchases.map(p => { const a = byId(DB.assets,p.assetId); if(!a) return null; const d = depInfo(a);
+    return [a.code, catName(a), a.brand, a.type, a.serial, orgName(a.orgId), vendorName(a.vendorId), a.buyDate, a.qty, Math.round(a.price), Math.round(totalPrice(a)), a.invoice, warrantyText(a), d.life, d.period, Math.round(d.accum), Math.round(d.book), empName(p.submitterId), p.dept, p.position, a.note]; }).filter(Boolean);
+  download('pembelian-aset-'+todayStr()+'.csv', toCSV(['Kode barang','Nama barang','Brand','Tipe','Serial number','Organisasi','Vendor','Tgl beli','Qty','Harga unit','Total perolehan','No. faktur','Garansi','Masa penyusutan (bln)','Periode','Akumulasi penyusutan','Nilai buku','Pengaju','Departemen','Posisi','Keterangan'], rows), 'text/csv;charset=utf-8'); toast('Export pembelian selesai.');
+}
+
+/* =====================================================================
+   LOGIN
+   ===================================================================== */
+const DEMO_IDS = ['usr_sa','usr_admin','usr_mgr','usr_spv','usr_staff'];
+function showLogin(){
+  const root = $('#loginRoot'); if(root.innerHTML) return;
+  const demo = DB.users.filter(u => DEMO_IDS.includes(u.id) && u.passHash === hashPw(defaultPw(u.role)));
+  root.innerHTML = `<div class="min-h-screen w-full flex flex-col lg:flex-row">
+    <div class="lg:w-[45%] text-white px-8 py-10 lg:p-14 flex flex-col justify-between gap-10" style="background:var(--ink)">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--tag)"><i class="fa-solid fa-barcode text-lg"></i></div><div><div class="display font-extrabold text-2xl leading-none">Katamata Group</div><div class="text-xs text-slate-400 mt-1">System Asset Management</div></div></div>
+      <div><h2 class="display font-extrabold text-4xl lg:text-5xl leading-[1.05] mb-4">Setiap aset punya kode.<br>Setiap kode punya riwayat.</h2>
+        <p class="text-slate-300 max-w-md mb-7">Catat pembelian, pantau stok dan lokasi aset, hitung penyusutan, dan cetak barcode dari satu tempat.</p>
+        <div class="flex flex-wrap gap-2"><span class="tagcode">KM/IT01/001/2026</span><span class="tagcode">VBI/PM01/001/2026</span><span class="tagcode">VBI/PM02/001/2025</span></div></div>
+      <div class="text-xs text-slate-500 hidden lg:block">Data tersimpan lokal di browser Anda (LocalStorage).</div></div>
+    <div class="flex-1 flex items-center justify-center p-6 lg:p-10"><div class="w-full max-w-md">
+      <h1 class="display text-3xl font-bold text-ink mb-1">Masuk</h1><p class="text-sm text-slate-500 mb-6">Gunakan akun yang diberikan oleh Super Admin.</p>
+      <form class="card p-6 space-y-4" onsubmit="return doLogin(event)" autocomplete="on">
+        <div id="lg_err" class="hidden rounded-lg px-3 py-2 text-sm" style="background:#fde3e0;color:#b42318"></div>
+        ${fld('Username', `<div class="relative"><i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="lg_user" class="input" style="padding-left:2.2rem" autocomplete="username" autofocus placeholder="contoh: superadmin"></div>`)}
+        ${fld('Password', `<div class="relative"><i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="lg_pass" type="password" class="input" style="padding-left:2.2rem;padding-right:2.6rem" autocomplete="current-password" placeholder="Masukkan password"><button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 px-2" onclick="togglePass()" aria-label="Tampilkan password"><i id="lg_eye" class="fa-solid fa-eye"></i></button></div>`)}
+        <button type="submit" class="btn btn-primary w-full justify-center" style="padding:.65rem"><i class="fa-solid fa-right-to-bracket"></i>Masuk</button></form>
+      ${demo.length ? `<div class="mt-5"><div class="text-xs font-semibold text-slate-500 mb-2">Akun demo (klik untuk mengisi otomatis)</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${demo.map(u => `<button type="button" class="card px-3 py-2 text-left hover:bg-slate-50" onclick="fillDemo('${u.id}')"><div class="text-sm font-semibold text-ink truncate">${esc(u.role)}</div><div class="mono text-[11px] text-slate-500 truncate">${esc(u.username)} / ${defaultPw(u.role)}</div></button>`).join('')}</div></div>` : ''}
+      <div class="mt-5 text-center"><button type="button" class="text-sm underline" style="color:var(--brand)" onclick="openSyncForm()"><i class="fa-solid fa-table mr-1"></i>Hubungkan / atur Google Sheets</button></div>
+    </div></div></div>`;
+}
+function loginError(msg){ const e = $('#lg_err'); if(e){ e.textContent = msg; e.classList.remove('hidden'); } }
+function togglePass(){ const i = $('#lg_pass'), e = $('#lg_eye'); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; e.className = 'fa-solid '+(show ? 'fa-eye-slash' : 'fa-eye'); }
+function fillDemo(id){ const u = byId(DB.users,id); if(!u) return; $('#lg_user').value = u.username; $('#lg_pass').value = defaultPw(u.role); const e = $('#lg_err'); if(e) e.classList.add('hidden'); $('#lg_pass').focus(); }
+function doLogin(e){
+  if(e) e.preventDefault();
+  const now = Date.now();
+  if(now < LOGIN_LOCK){ loginError('Terlalu banyak percobaan. Coba lagi dalam '+Math.ceil((LOGIN_LOCK-now)/1000)+' detik.'); return false; }
+  const un = val('lg_user').trim().toLowerCase(), pw = val('lg_pass');
+  if(!un || !pw){ loginError('Username dan password wajib diisi.'); return false; }
+  const u = DB.users.find(x => x.username === un);
+  if(!u || u.passHash !== hashPw(pw)){
+    LOGIN_FAILS++;
+    if(LOGIN_FAILS >= 5){ LOGIN_FAILS = 0; LOGIN_LOCK = now + 30000; loginError('Terlalu banyak percobaan gagal. Login dikunci selama 30 detik.'); }
+    else loginError('Username atau password salah.');
+    return false;
+  }
+  LOGIN_FAILS = 0; DB.session = {userId:u.id, realUserId:u.id}; UI.view = 'dashboard';
+  log('Login ke sistem'); save(); render(); toast('Selamat datang, '+u.name+'.');
+  return false;
+}
+async function logout(){
+  log('Keluar dari sistem'); closeModal(); closeConfirm(); saveLocal();
+  try { await flushUsers(); } catch(e){}
+  if(SYNC.enabled && SYNC.url){ // pastikan perubahan terakhir sudah terkirim ke Google Sheets sebelum pindah halaman
+    try { clearTimeout(pushTimer); pushTimer = null; await Promise.race([doPush(), new Promise(r => setTimeout(r, 4000))]); } catch(e){}
+  }
+  DB.session = {userId:null, realUserId:null}; saveLocal();
+  _leaving = true; location.href = 'index.html';
+}
+function openPasswordForm(){
+  showModal('Ubah password', `<div class="space-y-3">${fld('Password saat ini', `<input id="pw_old" type="password" class="input" autocomplete="current-password">`, '', true)}${fld('Password baru', `<input id="pw_new" type="password" class="input" autocomplete="new-password">`, '', true, 'Minimal 6 karakter.')}${fld('Ulangi password baru', `<input id="pw_new2" type="password" class="input" autocomplete="new-password">`, '', true)}</div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="savePassword()">Simpan password</button>`, 'max-w-md');
+}
+function savePassword(){
+  const u = realUser();
+  if(u.passHash !== hashPw(val('pw_old'))){ toast('Password saat ini salah.','error'); return; }
+  const n = val('pw_new');
+  if(n.length < 6){ toast('Password baru minimal 6 karakter.','error'); return; }
+  if(n !== val('pw_new2')){ toast('Konfirmasi password tidak cocok.','error'); return; }
+  u.passHash = hashPw(n); log('Mengubah password sendiri'); save(); closeModal(); toast('Password berhasil diubah.');
+}
+
+/* =====================================================================
+   SINKRONISASI GOOGLE SHEETS (via Google Apps Script Web App)
+   ===================================================================== */
+const SYNC_KEY = 'asetku_pm_sync_v1';
+const COLLECTIONS = ['orgs','categories','employees','vendors','locations','users','purchases','assets','loans','services','placements','activity'];
+const SYNC = Object.assign({url:'', token:'', enabled:false, rev:0, last:0}, (() => { try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; } catch(e){ return {}; } })());
+const DEFAULT_SHEETS = (window.KATAMATA_CONFIG && window.KATAMATA_CONFIG[APP_DOMAIN]) || {};
+if(DEFAULT_SHEETS.url && DEFAULT_SHEETS.token && (SYNC.url !== DEFAULT_SHEETS.url || SYNC.token !== DEFAULT_SHEETS.token || !SYNC.enabled)){
+  SYNC.url = DEFAULT_SHEETS.url; SYNC.token = DEFAULT_SHEETS.token; SYNC.enabled = true; SYNC.rev = 0; SYNC.last = 0; saveSyncCfg(); // satu link untuk semua: koneksi Sheets otomatis dari config.js
+}
+SYNC.status = SYNC.enabled ? 'idle' : 'off'; SYNC.error = ''; SYNC.known = new Set(); SYNC.conflictRev = 0;
+let pushTimer = null, pushing = false, pushDirty = false, pollTimer = null;
+function saveSyncCfg(){ try { localStorage.setItem(SYNC_KEY, JSON.stringify({url:SYNC.url, token:SYNC.token, enabled:SYNC.enabled, rev:SYNC.rev, last:SYNC.last, wasOutdated:SYNC.wasOutdated})); } catch(e){} }
+
+/* gambar / berkas besar dipisah ke sheet "_files" (batas sel Sheets 50.000 karakter) */
+function djb(s){ let h = 5381, g = 52711; for(let i = 0; i < s.length; i++){ const c = s.charCodeAt(i); h = ((h << 5) + h + c)|0; g = (Math.imul(g,33) ^ c)|0; } return (h>>>0).toString(36)+(g>>>0).toString(36); }
+const _fileIds = new Map();
+function fileId(s){ let id = _fileIds.get(s); if(!id){ id = '@file:'+djb(s)+'-'+s.length; _fileIds.set(s,id); } return id; }
+function extractFiles(db){
+  const files = {};
+  const walk = o => {
+    if(Array.isArray(o)) return o.map(walk);
+    if(o && typeof o === 'object'){ const r = {}; for(const k in o) r[k] = walk(o[k]); return r; }
+    if(typeof o === 'string' && o.length > 2000 && o.startsWith('data:')){ const id = fileId(o); files[id] = o; return id; }
+    return o;
+  };
+  const data = {}; COLLECTIONS.forEach(c => { data[c] = walk(db[c] || []); });
+  return {data, files};
+}
+function hydrate(o, files){
+  if(Array.isArray(o)) return o.map(x => hydrate(x, files));
+  if(o && typeof o === 'object'){ const r = {}; for(const k in o) r[k] = hydrate(o[k], files); return r; }
+  if(typeof o === 'string' && o.startsWith('@file:')) return files[o] || '';
+  return o;
+}
+async function sheetsCall(payload, cfg){
+  cfg = cfg || SYNC;
+  const res = await fetch(cfg.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(Object.assign({token:cfg.token}, payload))});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  let j; try { j = await res.json(); } catch(e){ throw new Error('respons bukan JSON, periksa URL /exec dan akses "Anyone"'); }
+  if(j && j.ok && cfg === SYNC){
+    const sup = Array.isArray(j.collections) && j.collections.includes('placements') && (j.version || 0) >= 4;
+    SYNC.outdated = !sup;
+    if(!sup){ SYNC.wasOutdated = true; if(!SYNC._warned){ SYNC._warned = true; toast('Code.gs di Apps Script belum versi terbaru: data "Lokasi Aset" belum tersimpan ke Google Sheets. Perbarui kode lalu buat New version.','error'); } }
+  }
+  return j;
+}
+async function pullFromSheets(){
+  const r = await sheetsCall({action:'pull'});
+  if(!r.ok) throw new Error(r.error || 'gagal menarik data');
+  if(!r.rev || !((r.data.users || []).length)) return {empty:true, rev:r.rev || 0};
+  const files = r.files || {}, nd = {version:1, session:DB.session || {userId:null, realUserId:null}};
+  const sup = Array.isArray(r.collections) && r.collections.includes('placements') && (r.version || 0) >= 4;
+  let keepPl = null; // lindungi data Lokasi Aset lokal bila server belum mendukung / baru ditingkatkan
+  if(!sup) keepPl = DB.placements || [];
+  else if(SYNC.wasOutdated && !((r.data.placements || []).length) && (DB.placements || []).length) keepPl = DB.placements;
+  COLLECTIONS.forEach(c => { nd[c] = (c === 'placements' && keepPl) ? keepPl : hydrate(r.data[c] || [], files); });
+  if(!validDB(nd)) throw new Error('struktur data di Sheets tidak valid');
+  normalizeDB(nd); ensurePasswords(nd); if(USERS_CFG) nd.users = DB.users; if(SH_READY) SH_KEYS.forEach(k => { nd[k] = DB[k]; }); DB = nd; // user dikelola di database pusat, bukan di Sheet sistem ini
+  if(!byId(DB.users, DB.session.userId)) DB.session = {userId:null, realUserId:null};
+  SYNC.rev = r.rev; SYNC.known = new Set(Object.keys(files)); SYNC.last = Date.now(); SYNC.status = 'ok'; SYNC.error = '';
+  if(sup) SYNC.wasOutdated = false;
+  saveSyncCfg(); saveLocal();
+  if(sup && keepPl) schedulePush();
+  if(USERS_CFG){ try { await pullUsersFromMaster(); } catch(e){} }
+  return {empty:false, rev:r.rev};
+}
+function schedulePush(){
+  if(!SYNC.enabled || !SYNC.url) return;
+  SYNC.status = 'pending'; updateSyncBadge();
+  clearTimeout(pushTimer); pushTimer = setTimeout(() => { pushTimer = null; doPush(); }, 1200);
+}
+async function doPush(){
+  if(pushing){ pushDirty = true; return; }
+  pushing = true; SYNC.status = 'syncing'; updateSyncBadge();
+  try {
+    const {data, files} = extractFiles(DB), nf = {};
+    Object.keys(files).forEach(id => { if(!SYNC.known.has(id)) nf[id] = files[id]; });
+    const r = await sheetsCall({action:'push', baseRev:SYNC.rev, data, files:nf, keepFiles:Object.keys(files), user:(realUser() || {}).name || ''});
+    if(r.ok){ SYNC.rev = r.rev; SYNC.known = new Set(Object.keys(files)); SYNC.status = 'ok'; SYNC.error = ''; SYNC.last = Date.now(); saveSyncCfg(); }
+    else if(r.conflict){ SYNC.status = 'conflict'; SYNC.conflictRev = r.rev; pushDirty = false; showConflict(); }
+    else { SYNC.status = 'error'; SYNC.error = r.error || 'gagal menyimpan'; }
+  } catch(e){ SYNC.status = 'error'; SYNC.error = 'tidak dapat terhubung ('+e.message+')'; }
+  pushing = false;
+  if(pushDirty && SYNC.status !== 'conflict'){ pushDirty = false; schedulePush(); }
+  updateSyncBadge();
+}
+function showConflict(){
+  showModal('Konflik data', `<p class="text-sm text-slate-600">Data di Google Sheets telah diubah oleh pengguna lain sejak sinkronisasi terakhir Anda. Pilih tindakan:</p>
+    <ul class="text-sm text-slate-600 list-disc pl-5 mt-2 space-y-1"><li><b>Muat data terbaru</b>: perubahan terakhir Anda di perangkat ini dibuang.</li><li><b>Timpa Sheets</b>: data di perangkat ini menggantikan data di Google Sheets.</li></ul>`,
+    `<button class="btn btn-ghost" onclick="resolveConflict('pull')">Muat data terbaru</button><button class="btn btn-danger" onclick="resolveConflict('push')">Timpa Sheets dengan data saya</button>`, 'max-w-lg');
+}
+async function resolveConflict(mode){
+  closeModal();
+  try {
+    if(mode === 'pull'){ await pullFromSheets(); render(); toast('Data terbaru dimuat dari Google Sheets.'); }
+    else { SYNC.rev = SYNC.conflictRev; await doPush(); render(); if(SYNC.status === 'ok') toast('Google Sheets diperbarui dengan data Anda.'); }
+  } catch(e){ SYNC.status = 'error'; SYNC.error = e.message; toast('Gagal: '+e.message,'error'); updateSyncBadge(); }
+}
+async function syncNow(){
+  if(!SYNC.enabled) return;
+  try {
+    if(pushTimer || SYNC.status === 'error'){ clearTimeout(pushTimer); pushTimer = null; await doPush(); if(SYNC.status !== 'ok'){ if(SYNC.status === 'error') toast('Sinkronisasi gagal: '+SYNC.error,'error'); return; } }
+    const r = await sheetsCall({action:'ping'}); if(!r.ok) throw new Error(r.error);
+    if(r.rev > SYNC.rev){ await pullFromSheets(); render(); toast('Data diperbarui dari Google Sheets.'); }
+    else { SYNC.status = 'ok'; toast('Data sudah sinkron dengan Google Sheets.'); updateSyncBadge(); }
+  } catch(e){ SYNC.status = 'error'; SYNC.error = e.message; toast('Sinkronisasi gagal: '+e.message,'error'); updateSyncBadge(); }
+}
+function startPolling(){
+  clearInterval(pollTimer); if(!SYNC.enabled) return;
+  pollTimer = setInterval(async () => {
+    if(!SYNC.enabled || pushing || pushTimer || $('#modalRoot').innerHTML || $('#confirmRoot').innerHTML) return;
+    if(SYNC.status === 'error'){ doPush(); return; }
+    if(SYNC.status !== 'ok') return;
+    try {
+      const r = await sheetsCall({action:'ping'});
+      if(r.ok && r.rev > SYNC.rev){ await pullFromSheets(); render(); toast('Data diperbarui dari Google Sheets.'); }
+    } catch(e){ SYNC.status = 'error'; SYNC.error = 'offline'; updateSyncBadge(); }
+  }, 30000);
+}
+function syncStatusBase(){
+  const t = SYNC.last ? ' · terakhir '+fmtDT(SYNC.last) : '';
+  if(!SYNC.enabled) return '<span class="badge b-gray">Nonaktif</span> Data hanya tersimpan di browser ini.';
+  if(SYNC.status === 'ok') return '<span class="badge b-green"><i class="fa-solid fa-check"></i>Tersinkron</span>'+t;
+  if(SYNC.status === 'pending' || SYNC.status === 'syncing' || SYNC.status === 'idle') return '<span class="badge b-amber">Menyimpan…</span>';
+  if(SYNC.status === 'conflict') return '<span class="badge b-red">Konflik data</span>';
+  return '<span class="badge b-red">Gagal</span> '+esc(SYNC.error || '');
+}
+function syncStatusHTML(){
+  return syncStatusBase() + (SYNC.enabled && SYNC.outdated ? '<div class="text-xs mt-1" style="color:#8f4f07">Code.gs di Apps Script belum versi terbaru: data Lokasi Aset hanya tersimpan lokal. Perbarui kode lalu buat New version.</div>' : '');
+}
+function updateSyncBadge(noRe){
+  const el = $('#syncBadge');
+  if(el){
+    const M = {off:['fa-database','#8a97a8','Data lokal (LocalStorage)'], ok:['fa-circle-check','#7ee0a5','Google Sheets · tersinkron'], idle:['fa-circle-notch','#f5c26b','Google Sheets · menghubungkan…'],
+      pending:['fa-cloud-arrow-up','#f5c26b','Menyimpan ke Google Sheets…'], syncing:['fa-cloud-arrow-up','#f5c26b','Menyimpan ke Google Sheets…'],
+      conflict:['fa-triangle-exclamation','#ff9a8f','Konflik data — klik untuk atur'], error:['fa-circle-exclamation','#ff9a8f','Gagal sinkron — klik untuk coba lagi']};
+    let m = M[SYNC.enabled ? SYNC.status : 'off'] || M.off;
+    if(SYNC.enabled && SYNC.outdated && SYNC.status === 'ok') m = ['fa-triangle-exclamation','#f5c26b','Sheets: perbarui Code.gs'];
+    el.innerHTML = `<i class="fa-solid ${m[0]} mr-1.5" style="color:${m[1]}"></i>${m[2]}`;
+  }
+  if(!noRe && UI.view === 'backup' && currentUser() && !$('#modalRoot').innerHTML) render();
+}
+function syncBadgeClick(){
+  if(!SYNC.enabled){ if(isSA()) openSyncForm(); else toast('Data disimpan lokal di browser. Hubungi Super Admin untuk mengaktifkan Google Sheets.'); return; }
+  if(SYNC.status === 'conflict') showConflict();
+  else if(SYNC.status === 'error') syncNow();
+  else if(isSA()) openSyncForm();
+  else toast('Status: '+(SYNC.status === 'ok' ? 'tersinkron dengan Google Sheets' : 'sedang menyimpan'));
+}
+function syncDesc(){
+  return syncStatusHTML()+'<br><span class="block mt-2">'+(SYNC.enabled
+    ? 'Setiap perubahan otomatis tersimpan ke Google Sheets Anda dan dibagikan ke semua pengguna (diperiksa tiap 30 detik).'
+    : 'Simpan data di Google Sheets agar bisa dipakai bersama dari banyak perangkat, dan dapat dilihat langsung di spreadsheet.')+'</span>';
+}
+function syncBtns(){
+  return `<div class="flex flex-wrap gap-2">${SYNC.enabled ? `<button class="btn btn-primary" onclick="syncNow()"><i class="fa-solid fa-rotate"></i>Sinkronkan sekarang</button>` : ''}${isSA() ? `<button class="btn btn-ghost" onclick="openSyncForm()"><i class="fa-solid fa-gear"></i>Pengaturan</button>` : ''}<button class="btn btn-ghost" onclick="showSetupGuide()"><i class="fa-solid fa-circle-question"></i>Panduan setup</button></div>`;
+}
+function openSyncForm(){
+  if(currentUser() && !isSA()){ toast('Hanya Super Admin yang dapat mengatur Google Sheets.','error'); return; }
+  const on = SYNC.enabled;
+  showModal('Google Sheets sebagai database', `<div class="rounded-lg p-3 mb-4 text-sm" style="background:#f6f8fa;border:1px solid var(--line)">${syncStatusHTML()}</div>
+    <div class="space-y-3">${fld('URL Web App (Apps Script)', `<input id="sy_url" class="input mono" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(SYNC.url)}">`, '', true)}
+    ${fld('Token rahasia', `<input id="sy_token" type="text" class="input mono" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(TMP.genToken || SYNC.token || '')}">`, '', true, 'Harus sama dengan nilai SECRET di script Apps Script.')}</div>
+    <div id="sy_diag" class="text-sm mt-3"></div><div class="flex flex-wrap gap-2 mt-3"><button class="btn btn-primary btn-sm" onclick="diagnoseSheets()"><i class="fa-solid fa-stethoscope"></i>Diagnosa koneksi</button><button class="btn btn-ghost btn-sm" onclick="showSetupGuide()"><i class="fa-solid fa-circle-question"></i>Panduan setup &amp; kode Apps Script</button>${on ? `<button class="btn btn-ghost btn-sm" onclick="copyInviteLink()"><i class="fa-solid fa-link"></i>Salin link undangan</button>` : ''}</div>`,
+    `${on ? `<button class="btn btn-danger" onclick="disconnectSheets()">Putuskan</button>` : ''}<button class="btn btn-ghost" onclick="closeModal()">Tutup</button><button class="btn btn-primary" onclick="connectSheets()"><i class="fa-solid fa-plug"></i>${on ? 'Simpan &amp; uji ulang' : 'Hubungkan'}</button>`, 'max-w-xl');
+}
+async function diagnoseSheets(){
+  const url = val('sy_url').trim(), token = val('sy_token').trim(), box = $('#sy_diag');
+  if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){ toast('URL harus berupa Web App Apps Script yang berakhiran /exec.','error'); return; }
+  if(!token){ toast('Isi token terlebih dahulu.','error'); return; }
+  box.innerHTML = '<div class="rounded-lg p-3" style="background:#f6f8fa;border:1px solid var(--line)"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i>Memeriksa…</div>';
+  let ok = false, msg;
+  try {
+    const res = await fetch(url+'?check='+encodeURIComponent(token));
+    let j; try { j = await res.json(); } catch(e){ throw new Error('Respons bukan JSON. Akses Web App belum "Anyone", atau URL bukan versi /exec.'); }
+    if(j.tokenMatch === undefined) msg = 'Server terjangkau, tetapi masih memakai <b>kode Apps Script lama</b>. Tempel Code.gs terbaru, lalu Deploy → Manage deployments → ikon pensil → Version: <b>New version</b> → Deploy.';
+    else if(j.tokenMatch && j.secretStillDefault){ ok = true; msg = 'Token cocok, tetapi script masih memakai token bawaan yang tidak aman. Ganti nilai SECRET, simpan, lalu buat New version.'; }
+    else if(j.tokenMatch){ ok = true; msg = 'Token <b>cocok</b>. Klik <b>Hubungkan</b>.'; }
+    else if(j.secretStillDefault) msg = 'Token tidak cocok karena deployment <b>masih memakai SECRET bawaan</b> (GANTI_TOKEN_RAHASIA). Kemungkinan besar Anda sudah mengubah SECRET tetapi belum membuat <b>New version</b>: Deploy → Manage deployments → ikon pensil → Version: New version → Deploy.';
+    else if(j.secretHasEdgeSpace) msg = 'Token tidak cocok. Nilai SECRET di script memiliki <b>spasi di awal atau akhir</b>. Hapus spasinya, simpan, lalu buat New version.';
+    else msg = 'Server aktif tetapi token tidak cocok. Periksa: (1) nilai SECRET di script sama persis dengan token di sini, huruf besar/kecil berpengaruh; (2) setelah mengubah SECRET sudah <b>New version</b>; (3) tanda kutip di script adalah kutip lurus \'...\'.';
+    if(j.tokenMatch !== undefined && !(Array.isArray(j.collections) && j.collections.includes('placements') && (j.version || 0) >= 4)) msg += '<br><b>Catatan:</b> Code.gs di Apps Script belum versi terbaru (belum mendukung Lokasi Aset). Tempel kode terbaru lalu buat New version.';
+  } catch(e){ msg = esc(e.message === 'Failed to fetch' ? 'Tidak dapat menjangkau server (internet putus, ad-blocker, atau URL salah).' : e.message); }
+  box.innerHTML = `<div class="rounded-lg p-3 flex gap-2" style="background:${ok ? '#e4f6ec' : '#fdeceb'};border:1px solid ${ok ? '#b6e3c8' : '#f3c3bf'}"><i class="fa-solid ${ok ? 'fa-circle-check' : 'fa-circle-xmark'} mt-0.5" style="color:${ok ? '#0d6b3f' : '#b42318'}"></i><div>${msg}</div></div>`;
+}
+async function connectSheets(){
+  const url = val('sy_url').trim(), token = val('sy_token').trim();
+  if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){ toast('URL harus berupa Web App Apps Script yang berakhiran /exec.','error'); return; }
+  if(!token){ toast('Token wajib diisi.','error'); return; }
+  TMP.cand = {url, token}; toast('Menguji koneksi…');
+  let r; try { r = await sheetsCall({action:'ping'}, TMP.cand); } catch(e){ toast('Gagal terhubung: '+e.message,'error'); return; }
+  if(!r.ok){ toast(r.error === 'Token salah' ? 'Token salah. Klik "Diagnosa koneksi" untuk mencari penyebabnya.' : 'Gagal: '+(r.error || 'respons tidak dikenal'),'error'); return; }
+  if(r.rev > 0){
+    if(SYNC.enabled && SYNC.url === url && SYNC.token === token){ closeModal(); toast('Koneksi berhasil.'); render(); return; }
+    const loggedIn = !!currentUser();
+    showModal('Google Sheets sudah berisi data', `<p class="text-sm text-slate-600">Ditemukan data (revisi ${r.rev}) di Google Sheets. Pilih sumber data yang dipakai aplikasi:</p>
+      <ul class="text-sm text-slate-600 list-disc pl-5 mt-2 space-y-1"><li><b>Muat dari Google Sheets</b>: data lokal di browser ini diganti.</li>${loggedIn ? '<li><b>Timpa Sheets</b>: data di Sheets diganti data lokal browser ini.</li>' : ''}</ul>`,
+      `<button class="btn btn-ghost" onclick="closeModal()">Batal</button>${loggedIn ? `<button class="btn btn-danger" onclick="finishConnect('push')">Timpa Sheets dengan data lokal</button>` : ''}<button class="btn btn-primary" onclick="finishConnect('pull')">Muat dari Google Sheets</button>`, 'max-w-lg');
+    return;
+  }
+  await finishConnect('push');
+}
+async function finishConnect(mode){
+  const c = TMP.cand; if(!c) return;
+  closeModal();
+  const prev = {url:SYNC.url, token:SYNC.token, enabled:SYNC.enabled, rev:SYNC.rev};
+  SYNC.url = c.url; SYNC.token = c.token; SYNC.enabled = true; SYNC.status = 'syncing';
+  try {
+    if(mode === 'pull'){
+      const r = await pullFromSheets(); if(r.empty) throw new Error('data di Sheets kosong');
+      UI.view = 'dashboard'; toast('Data dimuat dari Google Sheets.');
+    } else {
+      const r = await sheetsCall({action:'ping'}); SYNC.rev = r.rev || 0; SYNC.known = new Set();
+      await doPush(); if(SYNC.status !== 'ok') throw new Error(SYNC.error || 'gagal mengirim data');
+      toast('Data terkirim ke Google Sheets. Database online aktif.');
+    }
+    saveSyncCfg(); startPolling(); render();
+  } catch(e){
+    Object.assign(SYNC, prev); SYNC.status = prev.enabled ? 'error' : 'off'; saveSyncCfg(); toast('Gagal menghubungkan: '+e.message,'error'); render();
+  }
+}
+function disconnectSheets(){
+  confirmBox('Putuskan koneksi Google Sheets? Data di Sheets tetap ada, tetapi aplikasi kembali memakai data lokal di browser ini.', () => {
+    SYNC.enabled = false; SYNC.status = 'off'; clearTimeout(pushTimer); pushTimer = null; clearInterval(pollTimer); saveSyncCfg(); closeModal(); render(); toast('Koneksi Google Sheets diputus.');
+  }, {danger:true, ok:'Putuskan'});
+}
+function genToken(){
+  const a = new Uint8Array(24), cs = 'abcdefghjkmnpqrstuvwxyz23456789', g = globalThis.crypto;
+  if(g && g.getRandomValues) g.getRandomValues(a); else for(let i = 0; i < a.length; i++) a[i] = Math.floor(Math.random()*256);
+  TMP.genToken = Array.from(a, b => cs[b % cs.length]).join('');
+  showSetupGuide();
+}
+function gsCode(){ return $('#gsCode').textContent.replace(/^\n/,'').replace('GANTI_TOKEN_RAHASIA', TMP.genToken || 'GANTI_TOKEN_RAHASIA'); }
+function copyGsCode(){
+  const code = gsCode();
+  const fb = () => { const t = $('#gs_code'); t.select(); try { document.execCommand('copy'); toast('Kode disalin.'); } catch(e){ toast('Salin manual dari kotak kode.','error'); } };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(() => toast('Kode disalin.'), fb); else fb();
+}
+function showSetupGuide(){
+  const steps = ['Buka <b>sheets.new</b> untuk membuat Google Sheet kosong, beri nama misalnya "Katamata Group Database".',
+    'Pilih menu <b>Extensions (Ekstensi) → Apps Script</b>. Hapus kode bawaan, lalu tempel kode di bawah.',
+    'Ganti nilai <span class="mono">SECRET</span> dengan token rahasia Anda. Atau klik <b>Buat token acak</b> di bawah, kode otomatis terisi.',
+    'Klik <b>Deploy → New deployment</b>, pilih tipe <b>Web app</b>. Isi <i>Execute as: Me</i> dan <i>Who has access: Anyone</i>, lalu <b>Deploy</b> dan izinkan akses (Authorize).',
+    'Salin <b>Web app URL</b> (berakhiran <span class="mono">/exec</span>), kembali ke pengaturan, tempel URL dan token, lalu klik <b>Hubungkan</b>.'];
+  showModal('Panduan setup Google Sheets', `<ol class="list-decimal pl-5 space-y-1.5 text-sm text-slate-700 mb-4">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+    <div class="flex flex-wrap items-center gap-2 mb-3"><button class="btn btn-ghost btn-sm" onclick="genToken()"><i class="fa-solid fa-key"></i>Buat token acak</button>${TMP.genToken ? `<span class="mono text-xs badge b-blue select-all">${esc(TMP.genToken)}</span><span class="text-xs text-slate-500">token ini otomatis terisi di kode dan di form pengaturan</span>` : ''}</div>
+    <textarea id="gs_code" class="input mono" style="font-size:11px;line-height:1.45" rows="12" readonly>${esc(gsCode())}</textarea>
+    <div class="hint">Setelah mengubah kode di Apps Script, buat versi baru lewat Deploy → Manage deployments → Edit → New version.</div>`,
+    `<button class="btn btn-ghost" onclick="download('Code.gs', gsCode(), 'text/plain')"><i class="fa-solid fa-download"></i>Unduh Code.gs</button><button class="btn btn-ghost" onclick="copyGsCode()"><i class="fa-solid fa-copy"></i>Salin kode</button><button class="btn btn-primary" onclick="openSyncForm()">Lanjut ke pengaturan</button>`, 'max-w-3xl');
+}
+
+/* =====================================================================
+   LOKASI ASET TETAP
+   ===================================================================== */
+function createPlacement(d){
+  const pl = {id:uid('plc_'), assetId:d.assetId, qtyAllocated:parseInt(d.qtyAllocated,10) || 1, picName:d.picName || '', receipt:d.receipt || null, serviceStatus:d.serviceStatus || 'Normal', date:d.date, location:d.location, room:d.room, note:d.note || '', status:'active', returnDate:'', createdAt:Date.now(), updatedAt:Date.now(),
+    history:[{ts:Date.now(), type:'Alokasi '+(parseInt(d.qtyAllocated,10) || 1)+' unit', date:d.date, location:d.location, room:d.room, by:(currentUser() || {}).name || 'Sistem'}]};
+  DB.placements.push(pl); syncAssetLocations(DB); return pl;
+}
+function ensureLocationMaster(location, room){
+  if(!DB.locations.some(x => x.location.toLowerCase() === location.toLowerCase() && x.room.toLowerCase() === room.toLowerCase())) DB.locations.push({id:uid('loc_'), location, room});
+}
+function setPlcTab(k){ UI.tab.placement = k; render(); }
+VIEWS.placement = function(){
+  const tab = UI.tab.placement || 'active', q = UI.q.plc || '', fl = UI.f.plcLoc || '', hist = tab !== 'active';
+  const nA = DB.placements.filter(p => p.status === 'active').length, nH = DB.placements.filter(p => p.status === 'returned').length;
+  const totQ = DB.placements.filter(p => p.status === 'active').reduce((s,p) => s + (+p.qtyAllocated || 0), 0);
+  const locs = [...new Set(DB.placements.map(p => p.location))].sort();
+  const list = DB.placements.filter(p => p.status === (hist ? 'returned' : 'active'))
+    .map(p => ({p, a:byId(DB.assets, p.assetId)})).filter(x => x.a)
+    .filter(x => (!fl || x.p.location === fl) && match(q, x.a.code, itemTitle(x.a), assetHasSN(x.a) ? x.a.serial : '', x.p.location, x.p.room, x.p.picName, x.p.note))
+    .sort((x,y) => y.p.date.localeCompare(x.p.date) || x.a.code.localeCompare(y.a.code));
+  const rows = list.map(({p,a}) => `<tr>
+    <td>${tag(a.code)}</td>
+    <td><div class="font-semibold">${esc(itemTitle(a))}</div><div class="text-xs text-slate-500">${esc(orgName(a.orgId))}${assetHasSN(a) ? ' · SN '+esc(a.serial) : ''}</div></td>
+    <td class="r font-semibold">${num(p.qtyAllocated)}</td>
+    <td class="whitespace-nowrap">${fmtD(p.date)}${hist ? `<div class="text-xs text-slate-500">s.d. ${fmtD(p.returnDate)}</div>` : ''}</td>
+    <td><div class="font-semibold">${esc(p.room)}</div><div class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>${esc(p.location)}</div></td>
+    <td>${esc(p.picName) || '-'}</td>
+    <td>${p.receipt ? `<button class="btn btn-ghost btn-sm" onclick="viewPlcReceipt('${p.id}')"><i class="fa-solid fa-signature"></i>Lihat</button>` : '<span class="text-slate-400">-</span>'}</td>
+    <td>${p.serviceStatus === 'Dalam Perbaikan' ? '<span class="badge b-amber"><i class="fa-solid fa-screwdriver-wrench"></i>Dalam Perbaikan</span>' : '<span class="badge b-gray">Normal</span>'}</td>
+    <td class="text-xs text-slate-600" style="min-width:140px">${esc(p.note) || '-'}</td>
+    <td class="whitespace-nowrap"><button class="btn btn-ghost btn-sm" onclick="showAsset('${a.id}')" title="Detail"><i class="fa-solid fa-eye"></i></button>
+      ${can() && !hist ? `<button class="btn btn-ghost btn-sm" onclick="openPlacementForm('${p.id}')" title="Edit alokasi"><i class="fa-solid fa-pen"></i></button><button class="btn btn-warn btn-sm" onclick="openPlacementReturn('${p.id}')" title="Tarik kembali ke Stok Aset"><i class="fa-solid fa-rotate-left"></i>Tarik</button>` : ''}${delBtn('deletePlacement', p.id)}</td></tr>`).join('');
+  return `${tabsHtml([['active','Alokasi aktif ('+nA+')'],['history','Riwayat ditarik ('+nH+')']], tab, 'setPlcTab')}
+  <div class="flex flex-wrap items-center gap-2 mb-4"><input id="q_plc" class="input" style="max-width:280px" placeholder="Cari kode, barang, ruangan, PIC…" value="${esc(q)}" oninput="setQ('plc',this.value)">
+    <select class="input" style="max-width:240px" onchange="setF('plcLoc',this.value)">${opts(locs, fl, x => x, x => x, 'Semua lokasi')}</select><div class="flex-1"></div>
+    ${can() ? `<button class="btn btn-primary" onclick="openPlacementForm()"><i class="fa-solid fa-plus"></i>Alokasikan dari stok</button>` : ''}</div>
+  <div class="card overflow-hidden"><div class="px-4 py-2.5 text-sm text-slate-600 border-b border-slate-200">Total <b>${totQ}</b> unit sedang dialokasikan ke ruangan. Menarik barang dari ruangan otomatis menambah Sisa Qty di Stok Aset.</div>
+  <div class="overflow-x-auto"><table class="tbl"><thead><tr><th>Kode barang</th><th>Nama barang</th><th class="r">Qty</th><th>Tanggal</th><th>Ruangan / lokasi</th><th>PIC / serah terima</th><th>Tanda terima</th><th>Status service</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+  <tbody>${rows || emptyRow(10, hist ? 'Belum ada riwayat penarikan.' : 'Belum ada barang yang dialokasikan ke ruangan.')}</tbody></table></div></div>`;
+};
+function openPlacementForm(id, presetAsset){
+  if(!guard()) return;
+  const p = id ? byId(DB.placements, id) : null;
+  const avail = p ? [byId(DB.assets, p.assetId)] : DB.assets.filter(a => sisaQty(a) > 0).sort((x,y) => x.code.localeCompare(y.code));
+  if(!avail.length || !avail[0]){ toast('Tidak ada barang dengan Sisa Qty > 0 di Stok Aset. Lakukan pembelian atau tarik barang dari ruangan.','error'); return; }
+  TMP.plEdit = id || ''; TMP.receipt = p ? (p.receipt || null) : null; TMP.sigDirty = false;
+  const locs = [...new Set(DB.locations.map(x => x.location))];
+  const body = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+    ${fld('Barang dari Stok Aset', `<select id="pl_asset" class="input" ${p ? 'disabled' : ''} onchange="plAsset()">${opts(avail, p ? p.assetId : (presetAsset || ''), x => x.id, x => x.code+' — '+itemTitle(x)+' (sisa '+sisaQty(x)+' dari '+x.qty+')', p ? undefined : 'Pilih barang…')}</select>`, 'sm:col-span-2', true)}
+    <div id="pl_info" class="sm:col-span-2 rounded-lg p-3 text-sm text-slate-400" style="background:#f6f8fa;border:1px solid var(--line)"></div>
+    ${fld('Qty dialokasikan (unit)', `<input id="pl_qty" type="number" min="1" class="input" value="${p ? esc(p.qtyAllocated) : 1}">`, '', true, '<span id="pl_qty_hint"></span>')}
+    ${fld('Tanggal penempatan', `<input id="pl_date" type="date" class="input" value="${esc(p ? p.date : todayStr())}">`, '', true)}
+    ${fld('Lokasi', `<input id="pl_loc" class="input" list="dl_ploc" oninput="plRooms()" value="${esc(p ? p.location : '')}" placeholder="Pilih atau ketik lokasi"><datalist id="dl_ploc">${locs.map(x => `<option value="${esc(x)}">`).join('')}</datalist>`, '', true)}
+    ${fld('Ruangan', `<input id="pl_room" class="input" list="dl_proom" value="${esc(p ? p.room : '')}" placeholder="Pilih atau ketik ruangan"><datalist id="dl_proom"></datalist>`, '', true)}
+    ${fld('Nama PIC / serah terima', `<input id="pl_pic" class="input" list="dl_pic" value="${esc(p ? p.picName : '')}" placeholder="Pilih karyawan atau ketik nama"><datalist id="dl_pic">${DB.employees.map(e => `<option value="${esc(e.name)}">`).join('')}</datalist>`, '', true)}
+    ${fld('Status service', `<select id="pl_svc" class="input">${opts(['Normal','Dalam Perbaikan'], p ? (p.serviceStatus || 'Normal') : 'Normal', x => x, x => x)}</select>`)}
+    <div class="sm:col-span-2"><label class="label">Tanda terima digital</label>
+      <canvas id="sigCanvas" width="640" height="200"></canvas>
+      <div class="flex flex-wrap items-center gap-3 mt-2"><button type="button" class="btn btn-ghost btn-sm" onclick="clearSig()"><i class="fa-solid fa-eraser"></i>Hapus tanda tangan</button><span class="text-xs text-slate-500">atau unggah berkas:</span><input type="file" accept="image/*,.pdf" class="text-xs" onchange="pickReceipt(this)"></div>
+      <div class="hint" id="rc_name">${p && p.receipt ? 'Tersimpan: '+esc(p.receipt.name)+' (tanda tangan baru akan menggantikan)' : 'PIC menandatangani di kotak atas, atau unggah foto / PDF tanda terima.'}</div></div>
+    ${fld('Keterangan', `<textarea id="pl_note" class="input" rows="2">${esc(p ? p.note : '')}</textarea>`, 'sm:col-span-2')}</div>`;
+  showModal(p ? 'Edit alokasi ruangan' : 'Alokasikan barang ke ruangan', body, `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="savePlacement('${id || ''}')"><i class="fa-solid fa-floppy-disk"></i>Simpan</button>`, 'max-w-2xl');
+  initSigPad(); plAsset(); plRooms();
+}
+function plRooms(){
+  const loc = val('pl_loc').trim().toLowerCase();
+  const rooms = DB.locations.filter(x => !loc || x.location.toLowerCase() === loc).map(x => x.room);
+  $('#dl_proom').innerHTML = [...new Set(rooms)].map(r => `<option value="${esc(r)}">`).join('');
+}
+function plAsset(){
+  const a = byId(DB.assets, val('pl_asset')), box = $('#pl_info');
+  if(!a){ box.className = 'sm:col-span-2 rounded-lg p-3 text-sm text-slate-400'; box.innerHTML = 'Detail barang dan sisa stok terisi otomatis setelah barang dipilih.'; return; }
+  const own = TMP.plEdit ? (+(byId(DB.placements, TMP.plEdit) || {}).qtyAllocated || 0) : 0, max = sisaQty(a) + own;
+  box.className = 'sm:col-span-2 rounded-lg p-3 text-sm';
+  box.innerHTML = `<div class="flex gap-3"><img src="${esc(imgOf(a))}" class="w-20 h-20 rounded-lg object-cover border border-slate-200" alt=""><dl class="dl flex-1" style="grid-template-columns:110px 1fr">
+    <dt>Kode barang</dt><dd>${tag(a.code)}</dd><dt>Nama barang</dt><dd>${esc(itemTitle(a))}</dd>
+    ${assetHasSN(a) ? `<dt>Serial number</dt><dd class="mono">${esc(a.serial)}</dd><dt>Spesifikasi</dt><dd>${esc(a.spec) || '-'}</dd>` : ''}
+    <dt>Stok</dt><dd>Total ${a.qty} · Dialokasikan ${allocQty(a.id)} · Sisa <b>${sisaQty(a)}</b></dd></dl></div>`;
+  $('#pl_qty').max = max; $('#pl_qty_hint').textContent = 'Maksimal '+max+' unit (sisa stok yang bisa dialokasikan).';
+}
+function savePlacement(id){
+  if(!guard()) return;
+  const pl = id ? byId(DB.placements, id) : null;
+  const assetId = pl ? pl.assetId : val('pl_asset'), qty = parseInt(val('pl_qty'), 10) || 0, date = val('pl_date'), location = val('pl_loc').trim(), room = val('pl_room').trim(), pic = val('pl_pic').trim(), note = val('pl_note').trim(), svc = val('pl_svc') || 'Normal';
+  if(!assetId){ toast('Pilih barang dari Stok Aset.','error'); return; }
+  const a = byId(DB.assets, assetId), max = sisaQty(a) + (pl ? (+pl.qtyAllocated || 0) : 0);
+  if(qty < 1){ toast('Qty alokasi minimal 1 unit.','error'); return; }
+  if(qty > max){ toast('Qty alokasi ('+qty+') melebihi sisa stok ('+max+' unit).','error'); return; }
+  if(!date || !location || !room){ toast('Tanggal, lokasi, dan ruangan wajib diisi.','error'); return; }
+  if(!pic){ toast('Nama PIC / serah terima wajib diisi.','error'); return; }
+  if(date < a.buyDate){ toast('Tanggal tidak boleh sebelum tanggal beli ('+fmtD(a.buyDate)+').','error'); return; }
+  let receipt = TMP.receipt || null;
+  if(!receipt && TMP.sigDirty){ receipt = {name:'tanda-terima.png', mime:'image/png', data:$('#sigCanvas').toDataURL('image/png')}; }
+  const by = (currentUser() || {}).name || '-';
+  if(pl){
+    const moved = pl.location !== location || pl.room !== room || +pl.qtyAllocated !== qty;
+    pl.history = pl.history || []; pl.history.push({ts:Date.now(), type: moved ? 'Ubah alokasi ('+qty+' unit)' : 'Ubah data', date, location, room, by});
+    Object.assign(pl, {qtyAllocated:qty, date, location, room, picName:pic, receipt, serviceStatus:svc, note, updatedAt:Date.now()});
+    log('Mengubah alokasi '+a.code+': '+qty+' unit di '+location+' / '+room);
+  } else {
+    createPlacement({assetId, qtyAllocated:qty, date, location, room, picName:pic, receipt, serviceStatus:svc, note});
+    log(qty+' unit '+a.code+' dialokasikan ke '+location+' / '+room);
+  }
+  ensureLocationMaster(location, room); save(); closeModal(); render();
+  toast(pl ? 'Alokasi diperbarui.' : qty+' unit dialokasikan ke '+room+'. Sisa stok: '+sisaQty(a)+' unit.');
+}
+function viewPlcReceipt(id){ const p = byId(DB.placements, id); previewFile(p && p.receipt); }
+function initSigPad(){
+  const c = $('#sigCanvas'); if(!c) return;
+  const ctx = c.getContext('2d'); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111c2b';
+  let drawing = false, last = null;
+  const pos = e => { const r = c.getBoundingClientRect(); return {x:(e.clientX - r.left)*c.width/r.width, y:(e.clientY - r.top)*c.height/r.height}; };
+  c.addEventListener('pointerdown', e => { drawing = true; last = pos(e); try { c.setPointerCapture(e.pointerId); } catch(_){} e.preventDefault(); });
+  c.addEventListener('pointermove', e => { if(!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last = p; TMP.sigDirty = true; TMP.receipt = null; });
+  const end = () => { drawing = false; };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+}
+function clearSig(){ const c = $('#sigCanvas'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); } TMP.sigDirty = false; TMP.receipt = null; const n = $('#rc_name'); if(n) n.textContent = 'Tanda tangan dihapus.'; }
+function pickReceipt(input){ const f = input.files[0]; if(!f) return; fileObjFrom(f, o => { TMP.receipt = o; TMP.sigDirty = false; const c = $('#sigCanvas'); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height); $('#rc_name').textContent = 'Terpilih: '+o.name; }); }
+function openPlacementReturn(id){
+  if(!guard()) return; const p = byId(DB.placements, id), a = byId(DB.assets, p.assetId);
+  showModal('Tarik barang ke Stok Aset', `<div class="mb-4 text-sm">${tag(a.code)} <span class="ml-2">${esc(itemTitle(a))}</span><div class="text-slate-500 mt-1"><b>${p.qtyAllocated} unit</b> di <b>${esc(p.room)}</b>, ${esc(p.location)} (sejak ${fmtD(p.date)}). Seluruh qty ini akan kembali menambah Sisa Qty di Stok Aset.</div></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${fld('Tanggal ditarik', `<input id="pr_date" type="date" class="input" value="${todayStr()}">`, '', true)}
+    ${fld('Catatan', `<textarea id="pr_note" class="input" rows="2"></textarea>`, 'sm:col-span-2')}</div>`,
+    `<button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="doPlacementReturn('${id}')"><i class="fa-solid fa-rotate-left"></i>Kembalikan ke stok</button>`, 'max-w-lg');
+}
+function doPlacementReturn(id){
+  if(!guard()) return; const p = byId(DB.placements, id), a = byId(DB.assets, p.assetId), date = val('pr_date');
+  if(!date){ toast('Tanggal wajib diisi.','error'); return; }
+  if(date < p.date){ toast('Tanggal ditarik tidak boleh sebelum tanggal penempatan.','error'); return; }
+  const note = val('pr_note').trim();
+  p.status = 'returned'; p.returnDate = date; p.updatedAt = Date.now(); if(note) p.note = p.note ? p.note+' | '+note : note;
+  p.history = p.history || []; p.history.push({ts:Date.now(), type:'Ditarik '+p.qtyAllocated+' unit ke Stok Aset', date, location:p.location, room:p.room, by:(currentUser() || {}).name || '-'});
+  log(p.qtyAllocated+' unit '+a.code+' ditarik dari '+p.location+' / '+p.room+' ke Stok Aset'); save(); closeModal(); render(); toast(p.qtyAllocated+' unit kembali ke Stok Aset (sisa '+sisaQty(a)+').');
+}
+function deletePlacement(id){
+  if(!guardDel()) return; const p = byId(DB.placements, id), a = byId(DB.assets, p.assetId) || {code:'-'};
+  confirmBox(p.status === 'active'
+    ? `Hapus data alokasi <b>${esc(a.code)}</b> (${p.qtyAllocated} unit)? Karena masih aktif, qty otomatis kembali ke Stok Aset.`
+    : `Hapus riwayat alokasi <b>${esc(a.code)}</b>?`, () => {
+    DB.placements = DB.placements.filter(x => x.id !== id);
+    log('Menghapus data alokasi lokasi aset '+a.code); save(); render(); toast('Data alokasi dihapus.');
+  }, {danger:true, ok:'Hapus'});
+}
+function plHistoryHTML(assetId){
+  const ev = []; DB.placements.filter(p => p.assetId === assetId).forEach(p => (p.history || []).forEach(x => ev.push(x)));
+  if(!ev.length) return '';
+  ev.sort((x,y) => y.ts - x.ts);
+  return `<h4 class="font-bold text-ink mt-5 mb-2">Riwayat lokasi aset tetap</h4><div class="overflow-x-auto border border-slate-200 rounded-lg"><table class="tbl"><thead><tr><th>Tanggal</th><th>Kejadian</th><th>Lokasi / ruangan</th><th>Oleh</th></tr></thead><tbody>${ev.map(x => `<tr><td>${fmtD(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.location)} / ${esc(x.room)}</td><td>${esc(x.by)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function placementsCard(){
+  const act = DB.placements.filter(p => p.status === 'active'), by = {};
+  act.forEach(p => { const k = p.location+' / '+p.room; by[k] = (by[k] || 0) + (+p.qtyAllocated || 1); });
+  const keys = Object.keys(by).sort((a,b) => by[b] - by[a]).slice(0,6), max = Math.max(0, ...keys.map(k => by[k]));
+  return `<div class="card p-5 mb-4"><div class="flex items-center justify-between mb-3"><h3 class="font-bold text-ink">Lokasi aset tetap</h3><button class="text-sm underline" style="color:var(--brand)" onclick="navigate('placement')">Lihat semua (${act.length})</button></div>
+    ${keys.length ? keys.map(k => barRow(k, by[k], max, by[k]+' unit', 'var(--brand)')).join('') : '<div class="text-sm text-slate-400">Belum ada aset yang ditetapkan di lokasi tetap.</div>'}</div>`;
+}
+
+/* ---------- Link undangan & peringatan keamanan ---------- */
+function inviteLink(){
+  const b = btoa(JSON.stringify({u:SYNC.url, t:SYNC.token})).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  return location.href.split('#')[0] + '#sheets=' + b;
+}
+function parseInvite(){
+  try {
+    const m = (location.hash || '').match(/^#sheets=([\w-]+)$/); if(!m) return null;
+    let b = m[1].replace(/-/g,'+').replace(/_/g,'/'); b += '='.repeat((4 - b.length % 4) % 4);
+    const o = JSON.parse(atob(b));
+    if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(o.u || '') || !o.t) return null;
+    return o;
+  } catch(e){ return null; }
+}
+function copyInviteLink(){
+  if(location.protocol === 'file:'){ toast('Buka aplikasi dari alamat GitHub Pages (https://…) dulu, baru buat link undangan.','error'); return; }
+  const link = inviteLink();
+  confirmBox('Link ini memuat <b>URL dan token</b> Google Sheets. Siapa pun yang memilikinya dapat membaca dan menulis data. Bagikan hanya ke orang yang dipercaya (lewat chat pribadi, bukan di tempat umum).', () => {
+    const fb = () => { prompt('Salin link undangan ini:', link); };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(() => toast('Link undangan disalin.'), fb); else fb();
+  }, {ok:'Salin link'});
+}
+const _dashBase = VIEWS.dashboard;
+VIEWS.dashboard = function(){
+  let warn = '';
+  if(isSA()){
+    const weak = DB.users.filter(u => u.passHash === hashPw(defaultPw(u.role)));
+    if(weak.length) warn = `<div class="mb-4 rounded-lg border border-red-300 bg-red-50 text-red-900 px-4 py-3 text-sm flex flex-wrap items-center gap-3"><i class="fa-solid fa-triangle-exclamation"></i><div class="flex-1 min-w-[220px]"><b>${weak.length} akun masih memakai password bawaan</b> (${weak.map(u => esc(u.username)).join(', ')}). Ganti sebelum aplikasi dibuka untuk orang lain.</div><button class="btn btn-danger btn-sm" onclick="navigate('users')">Kelola user</button></div>`;
+  }
+  let base = _dashBase(); const pc = placementsCard(), key = '<div class="card p-5"><h3 class="font-bold text-ink mb-3">Aktivitas terakhir</h3>';
+  base = base.includes(key) ? base.replace(key, () => pc + key) : base + pc;
+  return warn + base;
+};
+
+/* ---------- Mulai ---------- */
+(async function boot(){
+  DB = loadDB(); reconcileRegistry(); saveLocal();
+  if(!enforceAccess()) return;
+  if(!currentUser()){ goPortal(); return; }
+  const inv = parseInvite();
+  if(inv){
+    if(!(SYNC.enabled && SYNC.url === inv.u && SYNC.token === inv.t)){ SYNC.url = inv.u; SYNC.token = inv.t; SYNC.enabled = true; SYNC.status = 'idle'; SYNC.rev = 0; saveSyncCfg(); }
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+  }
+  if(SYNC.enabled && SYNC.url){
+    $('#app').style.display = 'none';
+    $('#loginRoot').innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center text-slate-500"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3" style="color:var(--brand)"></i><div class="font-semibold text-ink">Menghubungkan ke Google Sheets…</div></div></div>';
+    try {
+      const r = await pullFromSheets();
+      if(r.empty){ SYNC.rev = r.rev; SYNC.known = new Set(); await doPush(); }
+    } catch(e){
+      SYNC.status = 'error'; SYNC.error = e.message;
+      toast('Tidak dapat terhubung ke Google Sheets, memakai data lokal. ('+e.message+')','error');
+    }
+    $('#loginRoot').innerHTML = '';
+  }
+  await Promise.all([USERS_CFG ? pullUsersFromMaster().catch(() => {}) : null, sharedBoot().catch(e => console.error(e))]);
+  if(USERS_CFG) startUsersPolling();
+  render(); startPolling();
+})();
+</script>
+</body>
+</html>

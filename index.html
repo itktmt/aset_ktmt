@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katamata Group — Portal Asset Management</title>
+<script src="config.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { colors: { ink: '#111c2b', brand: { DEFAULT: '#163a6b', dark: '#0f2d55' }, tag: '#f2600c' } } } };
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111c2b;--brand:#163a6b;--brand-d:#0f2d55;--tag:#f2600c;--paper:#eceff2;--line:#d9dee4;--text:#1b2633}
+*{box-sizing:border-box}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--paper);color:var(--text)}
+h1,h2,h3,.display{font-family:'Bricolage Grotesque','IBM Plex Sans',sans-serif;letter-spacing:-.01em}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .95rem;border-radius:8px;font-size:.85rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;line-height:1.25;text-decoration:none}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,.input:focus-visible,.app-card:focus-visible{outline:2px solid var(--tag);outline-offset:2px}
+.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:var(--brand-d)}
+.btn-ghost{background:#fff;border-color:#c9d0d8;color:#2a3746}.btn-ghost:hover{background:#f2f4f6}
+.input{width:100%;border:1px solid #c9d0d8;background:#fff;border-radius:8px;padding:.5rem .7rem;font-size:.875rem;outline:none;transition:border-color .15s,box-shadow .15s;color:var(--text)}
+.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(22,58,107,.14)}
+.label{display:block;font-size:.78rem;font-weight:600;color:#465466;margin-bottom:.3rem}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:600;white-space:nowrap}
+.b-green{background:#d9f3e4;color:#0d6b3f}.b-red{background:#fde3e0;color:#b42318}.b-amber{background:#fdeccb;color:#8f4f07}.b-gray{background:#e6e9ed;color:#4d5968}.b-blue{background:#dce8fb;color:#1a44b8}
+.tagcode{display:inline-flex;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;color:var(--ink);background:#fff;border:1px solid #c9d0d8;border-left:4px solid var(--tag);padding:.15rem .5rem .15rem .4rem;border-radius:5px}
+.app-card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s}
+.app-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent,var(--tag))}
+.app-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(17,28,43,.12);border-color:#b9c3cf}
+.app-card .go{transition:transform .15s}.app-card:hover .go{transform:translateX(4px)}
+.toast{display:flex;gap:.6rem;align-items:center;background:var(--ink);color:#fff;padding:.7rem 1rem;border-radius:8px;font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:360px;transition:opacity .3s;animation:tin .25s ease}
+.toast.error{background:#8f1d14}
+.toast i{color:#7ee0a5}.toast.error i{color:#ffc9c4}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toasts" class="fixed bottom-4 right-4 z-[80] space-y-2"></div>
+
+<script>
+/* =====================================================================
+   Katamata Group — Portal / Gateway (index.html)
+   Berbagi registry user + sesi dengan IT.html & pm.html lewat key 'asetku_db_v1'
+   ===================================================================== */
+const REG_KEY = 'asetku_db_v1';
+const LEGACY_KEY = 'asetku_legacy_backup_v1';
+const APPS = {
+  IT: {page:'IT.html', key:'asetku_it_db_v1', title:'Aset IT Management', desc:'Laptop, CPU, monitor, printer, dan perangkat IT lainnya: pembelian, peminjaman, service, dan penyusutan.', icon:'fa-laptop-code', accent:'#163a6b'},
+  PM: {page:'pm.html', key:'asetku_pm_db_v1', title:'Property Management', desc:'Meja, kursi, AC, dan aset properti lainnya: stok, lokasi penempatan, service, dan penyusutan.', icon:'fa-building', accent:'#f2600c'}
+};
+const ACCESS_SHORT = {ALL:'IT & Property', IT:'Hanya IT', PM:'Hanya Property'};
+const MIN_PW_DEFAULT = {admin:'admin123', user:'user123'};
+
+/* ---------- Utilitas ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const domainOf = u => (u && ACCESS_SHORT[u.accessDomain] ? u.accessDomain : 'ALL');
+function toast(msg, type='ok'){
+  const t = document.createElement('div'); t.className = 'toast '+type;
+  t.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i><span>${esc(msg)}</span>`;
+  $('#toasts').appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 3400);
+}
+
+/* ---------- Hash password (identik dengan IT.html / pm.html) ---------- */
+function sha256(ascii){
+  const rr = (v,a) => (v>>>a)|(v<<(32-a));
+  const maxWord = Math.pow(2,32); let result = '', words = [], bitLen = ascii.length*8;
+  let hash = sha256.h = sha256.h || [], k = sha256.k = sha256.k || [], pc = k.length; const comp = {};
+  for(let c = 2; pc < 64; c++){ if(!comp[c]){ for(let i = 0; i < 313; i += c) comp[i] = c; hash[pc] = (Math.pow(c,.5)*maxWord)|0; k[pc++] = (Math.pow(c,1/3)*maxWord)|0; } }
+  ascii += '\x80'; while(ascii.length % 64 - 56) ascii += '\x00';
+  for(let i = 0; i < ascii.length; i++){ const j = ascii.charCodeAt(i); words[i>>2] |= j << ((3-i)%4)*8; }
+  words[words.length] = ((bitLen/maxWord)|0); words[words.length] = bitLen;
+  for(let j = 0; j < words.length;){
+    const w = words.slice(j, j += 16), old = hash; hash = hash.slice(0,8);
+    for(let i = 0; i < 64; i++){
+      const w15 = w[i-15], w2 = w[i-2], a = hash[0], e = hash[4];
+      const t1 = hash[7] + (rr(e,6)^rr(e,11)^rr(e,25)) + ((e&hash[5])^((~e)&hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i-16] + (rr(w15,7)^rr(w15,18)^(w15>>>3)) + w[i-7] + (rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      const t2 = (rr(a,2)^rr(a,13)^rr(a,22)) + ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash = [(t1+t2)|0].concat(hash); hash[4] = (hash[4] + t1)|0;
+    }
+    for(let i = 0; i < 8; i++) hash[i] = (hash[i] + old[i])|0;
+  }
+  for(let i = 0; i < 8; i++) for(let j = 3; j + 1; j--){ const b = (hash[i]>>(j*8))&255; result += ((b < 16) ? 0 : '') + b.toString(16); }
+  return result;
+}
+const hashPw = pw => sha256(unescape(encodeURIComponent('asetku:'+pw)));
+
+const defaultPw = role => (role === 'Super Admin' || role === 'Admin') ? MIN_PW_DEFAULT.admin : MIN_PW_DEFAULT.user;
+
+/* ---------- Registry ---------- */
+function seedUsers(){
+  const u = [
+    {id:'usr_sa', name:'Administrator Utama', username:'superadmin', role:'Super Admin', accessDomain:'ALL'},
+    {id:'usr_admin', name:'Andi Pratama', username:'andi.admin', role:'Admin', accessDomain:'IT'},
+    {id:'usr_mgr', name:'Sinta Maharani', username:'sinta.manager', role:'Manager', accessDomain:'ALL'},
+    {id:'usr_spv', name:'Dewi Lestari', username:'dewi.spv', role:'Supervisor', accessDomain:'PM'},
+    {id:'usr_staff', name:'Budi Santoso', username:'budi.staff', role:'Staff', accessDomain:'IT'}];
+  u.forEach(x => x.passHash = hashPw(defaultPw(x.role)));
+  return u;
+}
+function readRaw(){ try { return JSON.parse(localStorage.getItem(REG_KEY)); } catch(e){ return null; } }
+let REG = null;
+function loadRegistry(){
+  let d = readRaw();
+  if(d && d.registry !== 1 && Array.isArray(d.assets)){ // format lama: seluruh database tersimpan di key ini
+    try { if(!localStorage.getItem(LEGACY_KEY)) localStorage.setItem(LEGACY_KEY, localStorage.getItem(REG_KEY)); } catch(e){}
+    d = {registry:1, seed:false, users:d.users || [], session:d.session || {userId:null, realUserId:null}};
+  }
+  if(!d || d.registry !== 1 || !Array.isArray(d.users) || !d.users.length) d = {registry:1, seed:true, users:seedUsers(), session:{userId:null, realUserId:null}};
+  d.session = d.session || {userId:null, realUserId:null};
+  d.users.forEach(u => { u.accessDomain = u.role === 'Super Admin' ? 'ALL' : domainOf(u); });
+  REG = d; saveRegistry();
+}
+function saveRegistry(){ try { localStorage.setItem(REG_KEY, JSON.stringify(Object.assign({}, REG, {updatedAt:Date.now()}))); } catch(e){ toast('Gagal menyimpan sesi: penyimpanan browser tidak tersedia.','error'); } }
+const byId = (l, id) => l.find(x => x.id === id);
+const sessionUser = () => { const s = REG.session || {}; return byId(REG.users, s.realUserId || s.userId); };
+
+/* ---------- Statistik ringkas tiap sistem (dibaca dari data masing-masing aplikasi) ---------- */
+function appStats(code){
+  try {
+    const d = JSON.parse(localStorage.getItem(APPS[code].key)); if(!d || !Array.isArray(d.assets)) return null;
+    const svc = (d.services || []).filter(s => s.status === 'Dalam Perbaikan').length;
+    return d.assets.length+' aset · '+svc+' dalam service';
+  } catch(e){ return null; }
+}
+
+/* ---------- Tampilan ---------- */
+const brand = `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center text-white" style="background:var(--tag)"><i class="fa-solid fa-barcode text-lg"></i></div><div><div class="display font-extrabold text-2xl leading-none text-ink">Katamata Group</div><div class="text-xs text-slate-500 mt-1">Portal System Asset Management</div></div></div>`;
+let LOGIN_FAILS = 0, LOGIN_LOCK = 0;
+
+function render(){
+  const u = sessionUser();
+  if(!u) return showLogin();
+  const d = domainOf(u);
+  if(d !== 'ALL') return showRedirect(u, d);
+  showSwitcher(u);
+}
+
+function showLogin(){
+  const demo = REG.seed ? REG.users.filter(u => u.passHash === hashPw(defaultPw(u.role))) : [];
+  $('#root').innerHTML = `<div class="min-h-screen w-full flex flex-col lg:flex-row">
+    <div class="lg:w-[45%] text-white px-8 py-10 lg:p-14 flex flex-col justify-between gap-10" style="background:var(--ink)">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--tag)"><i class="fa-solid fa-barcode text-lg"></i></div><div><div class="display font-extrabold text-2xl leading-none">Katamata Group</div><div class="text-xs text-slate-400 mt-1">Portal System Asset Management</div></div></div>
+      <div><h2 class="display font-extrabold text-4xl lg:text-5xl leading-[1.05] mb-4">Satu pintu masuk.<br>Dua sistem aset.</h2>
+        <p class="text-slate-300 max-w-md mb-7">Masuk sekali, lalu Anda diarahkan ke sistem yang sesuai hak akses: Aset IT atau Property Management.</p>
+        <div class="flex flex-wrap gap-2"><span class="tagcode">KM/IT01/001/2026</span><span class="tagcode">VBI/PM01/001/2026</span></div></div>
+      <div class="text-xs text-slate-500 hidden lg:block">Sesi login dibagikan ke IT.html dan pm.html lewat LocalStorage browser.</div></div>
+    <div class="flex-1 flex items-center justify-center p-6 lg:p-10"><div class="w-full max-w-md">
+      <h1 class="display text-3xl font-bold text-ink mb-1">Masuk</h1><p class="text-sm text-slate-500 mb-6">Gunakan akun yang diberikan oleh Super Admin.</p>
+      <form class="card p-6 space-y-4" onsubmit="return doLogin(event)" autocomplete="on">
+        <div id="lg_err" class="hidden rounded-lg px-3 py-2 text-sm" style="background:#fde3e0;color:#b42318"></div>
+        <div><label class="label">Username</label><div class="relative"><i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="lg_user" class="input" style="padding-left:2.2rem" autocomplete="username" autofocus placeholder="contoh: superadmin"></div></div>
+        <div><label class="label">Password</label><div class="relative"><i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="lg_pass" type="password" class="input" style="padding-left:2.2rem;padding-right:2.6rem" autocomplete="current-password" placeholder="Masukkan password"><button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 px-2" onclick="togglePass()" aria-label="Tampilkan password"><i id="lg_eye" class="fa-solid fa-eye"></i></button></div></div>
+        <button type="submit" class="btn btn-primary w-full justify-center" style="padding:.65rem"><i class="fa-solid fa-right-to-bracket"></i>Masuk</button></form>
+      ${demo.length ? `<div class="mt-5"><div class="text-xs font-semibold text-slate-500 mb-2">Akun demo (klik untuk mengisi otomatis)</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${demo.map(u => `<button type="button" class="card px-3 py-2 text-left hover:bg-slate-50" onclick="fillDemo('${u.id}')"><div class="text-sm font-semibold text-ink truncate">${esc(u.role)} <span class="badge ${domainOf(u) === 'ALL' ? 'b-blue' : domainOf(u) === 'IT' ? 'b-amber' : 'b-green'} ml-1">${ACCESS_SHORT[domainOf(u)]}</span></div><div class="mono text-[11px] text-slate-500 truncate">${esc(u.username)} / ${defaultPw(u.role)}</div></button>`).join('')}</div></div>` : ''}
+      <div class="mt-5 text-xs text-slate-500 text-center">Akun yang tersinkron lewat Google Sheets dapat masuk langsung di <a class="underline" style="color:var(--brand)" href="IT.html">IT.html</a> atau <a class="underline" style="color:var(--brand)" href="pm.html">pm.html</a>.</div>
+    </div></div></div>`;
+}
+function fillDemo(id){ const u = byId(REG.users, id); if(!u) return; $('#lg_user').value = u.username; $('#lg_pass').value = defaultPw(u.role); }
+function togglePass(){ const i = $('#lg_pass'), e = $('#lg_eye'); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; e.className = 'fa-solid '+(show ? 'fa-eye-slash' : 'fa-eye'); }
+function loginError(m){ const e = $('#lg_err'); e.textContent = m; e.classList.remove('hidden'); }
+function doLogin(e){
+  if(e) e.preventDefault();
+  const now = Date.now();
+  if(now < LOGIN_LOCK){ loginError('Terlalu banyak percobaan. Coba lagi dalam '+Math.ceil((LOGIN_LOCK-now)/1000)+' detik.'); return false; }
+  const un = $('#lg_user').value.trim().toLowerCase(), pw = $('#lg_pass').value;
+  if(!un || !pw){ loginError('Username dan password wajib diisi.'); return false; }
+  const u = REG.users.find(x => x.username === un);
+  if(!u || u.passHash !== hashPw(pw)){
+    LOGIN_FAILS++;
+    if(LOGIN_FAILS >= 5){ LOGIN_FAILS = 0; LOGIN_LOCK = now + 30000; loginError('Terlalu banyak percobaan gagal. Login dikunci selama 30 detik.'); }
+    else loginError('Username atau password salah.');
+    return false;
+  }
+  LOGIN_FAILS = 0; REG.session = {userId:u.id, realUserId:u.id}; saveRegistry();
+  toast('Selamat datang, '+u.name+'.'); render();
+  return false;
+}
+function logout(){ REG.session = {userId:null, realUserId:null}; saveRegistry(); render(); toast('Anda telah keluar.'); }
+
+function showRedirect(u, d){
+  const a = APPS[d];
+  $('#root').innerHTML = `<div class="min-h-screen flex items-center justify-center p-6"><div class="card p-8 max-w-md w-full text-center">
+    <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color:var(--brand)"></i>
+    <h1 class="display text-xl font-bold text-ink mb-1">Mengalihkan ke ${esc(a.title)}…</h1>
+    <p class="text-sm text-slate-500 mb-5">Akun <b>${esc(u.name)}</b> memiliki akses ${esc(ACCESS_SHORT[d])}.</p>
+    <a class="btn btn-primary" href="${a.page}">Buka sekarang</a> <button class="btn btn-ghost" onclick="logout()">Keluar</button></div></div>`;
+  setTimeout(() => { if(sessionUser() && domainOf(sessionUser()) === d) location.replace(a.page); }, 700);
+}
+
+function showSwitcher(u){
+  const card = code => { const a = APPS[code], st = appStats(code);
+    return `<a href="${a.page}" class="app-card" style="--accent:${a.accent}">
+      <div class="flex items-start gap-4"><div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0" style="background:${a.accent}1a;color:${a.accent}"><i class="fa-solid ${a.icon}"></i></div>
+      <div class="min-w-0 flex-1"><div class="display text-xl font-bold text-ink">${a.title}</div><p class="text-sm text-slate-600 mt-1">${a.desc}</p>
+        <div class="flex items-center justify-between mt-4"><span class="text-xs ${st ? 'text-slate-500' : 'text-slate-400'}">${st ? esc(st) : 'Belum ada data di browser ini'}</span><span class="text-sm font-semibold go" style="color:${a.accent}">Buka sistem <i class="fa-solid fa-arrow-right ml-1"></i></span></div></div></div></a>`; };
+  $('#root').innerHTML = `<div class="min-h-screen flex flex-col">
+    <header class="bg-white border-b border-slate-200"><div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between gap-3">${brand}
+      <div class="flex items-center gap-2 shrink-0"><span class="hidden sm:inline text-sm font-semibold text-ink truncate" style="max-width:180px">${esc(u.name)}</span><span class="badge ${u.role === 'Super Admin' ? 'b-red' : u.role === 'Admin' ? 'b-blue' : 'b-gray'}">${esc(u.role)}</span>
+      <button class="btn btn-ghost" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline">Keluar</span></button></div></div></header>
+    <main class="flex-1 max-w-5xl w-full mx-auto px-5 py-10">
+      <h1 class="display text-3xl font-bold text-ink">Pilih sistem</h1>
+      <p class="text-slate-500 mt-1 mb-8">Anda memiliki akses ke kedua sistem. Anda dapat berpindah kapan saja lewat tombol <b>Switch App</b> di header masing-masing sistem.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">${card('IT')}${card('PM')}</div>
+    </main>
+    <footer class="text-center text-xs text-slate-400 py-6">Katamata Group · Asset Management Portal</footer></div>`;
+}
+
+/* ---------- Ambil daftar user dari Google Sheets (bila config.js terisi) ---------- */
+async function sheetsPost(c, payload){
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const res = await fetch(c.url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(Object.assign({token:c.token}, payload)), signal:ctl.signal});
+    return await res.json();
+  } finally { clearTimeout(t); }
+}
+async function fetchUsers(c){
+  let j = await sheetsPost(c, {action:'users'});
+  if(j && j.ok && Array.isArray(j.users)) return j.users;
+  j = await sheetsPost(c, {action:'pull'}); // Code.gs lama belum mengenal aksi 'users'
+  return (j && j.ok && j.data && Array.isArray(j.data.users)) ? j.data.users : [];
+}
+async function refreshUsersFromSheets(){
+  const cfg = window.KATAMATA_CONFIG || {};
+  const k = ['IT','PM'].find(k => cfg[k] && cfg[k].url && cfg[k].token); // database user pusat
+  if(!k) return false;
+  let merged = [];
+  try { merged = (await fetchUsers(cfg[k])).filter(u => u && u.id && u.username && u.passHash); } catch(e){}
+  if(!merged.length) return false;
+  merged.forEach(u => { u.accessDomain = u.role === 'Super Admin' ? 'ALL' : domainOf(u); });
+  REG.users = merged; REG.seed = false;
+  const sid = (REG.session || {}).realUserId || (REG.session || {}).userId;
+  if(sid && !byId(merged, sid)) REG.session = {userId:null, realUserId:null};
+  saveRegistry(); return true;
+}
+
+loadRegistry();
+(async function boot(){
+  const cfg = window.KATAMATA_CONFIG || {};
+  const hasCfg = ['IT','PM'].some(k => cfg[k] && cfg[k].url && cfg[k].token);
+  if(!hasCfg){ render(); return; }
+  if(sessionUser()){ render(); const had = !!sessionUser(); await refreshUsersFromSheets(); if(had && !sessionUser()) render(); return; }
+  $('#root').innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center text-slate-500"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3" style="color:var(--brand)"></i><div class="font-semibold text-ink">Menghubungkan ke database…</div></div></div>';
+  await refreshUsersFromSheets(); render();
+})();
+// sesi berubah di tab lain (mis. logout dari IT.html / pm.html) -> segarkan portal
+window.addEventListener('storage', e => { if(e.key === REG_KEY){ const r = readRaw(); if(r && r.registry === 1){ REG = r; render(); } } });
+</script>
+</body>
+</html>
